@@ -1,0 +1,664 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>ACE CHATBOT</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+    <style>
+        :root {
+            --bg-1: #0b1220;
+            --bg-2: #0f1a33;
+            --card: rgba(255, 255, 255, 0.08);
+            --card-2: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.14);
+            --text: rgba(255, 255, 255, 0.92);
+            --muted: rgba(255, 255, 255, 0.68);
+            --primary-1: #667eea;
+            --primary-2: #764ba2;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --shadow: 0 18px 55px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            color: var(--text);
+            background: radial-gradient(1200px 600px at 20% 10%, rgba(102, 126, 234, 0.35), transparent 60%),
+                        radial-gradient(900px 500px at 90% 30%, rgba(118, 75, 162, 0.32), transparent 55%),
+                        linear-gradient(160deg, var(--bg-1), var(--bg-2));
+            overflow-x: hidden;
+        }
+
+        .floating-symbols {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-symbol {
+            position: absolute;
+            top: 110%;
+            left: var(--x);
+            font-family: Poppins, Inter, sans-serif;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.14);
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            transform: translate3d(0, 0, 0);
+            animation: floatUp var(--dur) linear infinite;
+            animation-delay: var(--delay);
+            font-size: var(--size);
+            filter: blur(0.1px);
+        }
+
+        .floating-symbol.accent {
+            color: rgba(102, 126, 234, 0.18);
+        }
+
+        .floating-symbol.accent2 {
+            color: rgba(118, 75, 162, 0.18);
+        }
+
+        .floating-symbol.accent3 {
+            color: rgba(34, 197, 94, 0.18);
+        }
+
+        .floating-symbol.accent4 {
+            color: rgba(59, 130, 246, 0.18);
+        }
+
+        .floating-symbol.accent5 {
+            color: rgba(236, 72, 153, 0.18);
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translate3d(0, 0, 0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translate3d(var(--drift), -140vh, 0) rotate(18deg);
+                opacity: 0;
+            }
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 18px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary-1), var(--primary-2));
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.28);
+            display: grid;
+            place-items: center;
+            font-family: Poppins, Inter, sans-serif;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .titles {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .titles h1 {
+            margin: 0;
+            font-family: Poppins, Inter, sans-serif;
+            font-size: 20px;
+            letter-spacing: 0.3px;
+        }
+
+        .titles p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chip {
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.12s ease, background 0.12s ease;
+            user-select: none;
+        }
+
+        .chip:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.11);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, var(--card), var(--card-2));
+            box-shadow: var(--shadow);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .side {
+            padding: 18px;
+        }
+
+        .side h2 {
+            margin: 0;
+            font-family: Poppins, Inter, sans-serif;
+            font-size: 16px;
+        }
+
+        .side p {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .tips {
+            margin-top: 14px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .tip {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .tip .k {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .tip .v {
+            font-size: 13px;
+        }
+
+        .chat {
+            display: flex;
+            flex-direction: column;
+            min-height: 620px;
+        }
+
+        .chat-header {
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .chat-header .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.86);
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        #chatbox {
+            flex: 1;
+            padding: 18px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 78%;
+            padding: 12px 12px;
+            border-radius: 14px;
+            line-height: 1.5;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+        }
+
+        .message strong {
+            display: block;
+            font-family: Poppins, Inter, sans-serif;
+            font-size: 12px;
+            letter-spacing: 0.2px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+
+        .message .md {
+            white-space: normal;
+        }
+
+        .message .md p {
+            margin: 0 0 10px;
+        }
+
+        .message .md p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message .md h1,
+        .message .md h2,
+        .message .md h3 {
+            margin: 12px 0 8px;
+            font-family: Poppins, Inter, sans-serif;
+            letter-spacing: 0.2px;
+            line-height: 1.2;
+        }
+
+        .message .md h1 { font-size: 16px; }
+        .message .md h2 { font-size: 15px; }
+        .message .md h3 { font-size: 14px; }
+
+        .message .md ul,
+        .message .md ol {
+            margin: 8px 0 10px 18px;
+            padding: 0;
+        }
+
+        .message .md li {
+            margin: 4px 0;
+        }
+
+        .message .md code {
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 13px;
+        }
+
+        .message .md pre {
+            background: rgba(0, 0, 0, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 12px;
+            border-radius: 14px;
+            overflow: auto;
+            margin: 10px 0;
+        }
+
+        .message .md pre code {
+            background: transparent;
+            border: 0;
+            padding: 0;
+        }
+
+        .message .md blockquote {
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-left: 3px solid rgba(102, 126, 234, 0.65);
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.35), rgba(118, 75, 162, 0.28));
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .message.error {
+            align-self: center;
+            background: rgba(239, 68, 68, 0.14);
+            border-color: rgba(239, 68, 68, 0.35);
+        }
+
+        .composer {
+            padding: 14px;
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        #userInput {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.20);
+            color: var(--text);
+            outline: none;
+            font-size: 14px;
+        }
+
+        #userInput::placeholder {
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        #sendButton {
+            padding: 12px 16px;
+            border: 0;
+            border-radius: 14px;
+            cursor: pointer;
+            font-family: Poppins, Inter, sans-serif;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--primary-1), var(--primary-2));
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.24);
+            transition: transform 0.12s ease, opacity 0.12s ease;
+        }
+
+        #sendButton:hover {
+            transform: translateY(-1px);
+        }
+
+        #sendButton:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-symbols" aria-hidden="true">
+        <span class="floating-symbol accent" style="--x: 6%; --dur: 18s; --delay: -2s; --size: 34px; --drift: -30px;">π</span>
+        <span class="floating-symbol" style="--x: 14%; --dur: 24s; --delay: -9s; --size: 28px; --drift: 24px;">Σ</span>
+        <span class="floating-symbol accent2" style="--x: 22%; --dur: 20s; --delay: -12s; --size: 30px; --drift: -18px;">∫</span>
+        <span class="floating-symbol" style="--x: 30%; --dur: 26s; --delay: -5s; --size: 22px; --drift: 28px;">√</span>
+        <span class="floating-symbol accent" style="--x: 38%; --dur: 22s; --delay: -15s; --size: 20px; --drift: -22px;">{ }</span>
+        <span class="floating-symbol" style="--x: 46%; --dur: 28s; --delay: -7s; --size: 18px; --drift: 36px;">&lt;/&gt;</span>
+        <span class="floating-symbol accent2" style="--x: 54%; --dur: 19s; --delay: -10s; --size: 22px; --drift: -26px;">JS</span>
+        <span class="floating-symbol" style="--x: 62%; --dur: 25s; --delay: -3s; --size: 20px; --drift: 20px;">PY</span>
+        <span class="floating-symbol accent" style="--x: 70%; --dur: 23s; --delay: -11s; --size: 26px; --drift: -34px;">%</span>
+        <span class="floating-symbol" style="--x: 78%; --dur: 27s; --delay: -14s; --size: 18px; --drift: 30px;">x²</span>
+        <span class="floating-symbol accent2" style="--x: 86%; --dur: 21s; --delay: -6s; --size: 24px; --drift: -16px;">Δ</span>
+        <span class="floating-symbol" style="--x: 92%; --dur: 29s; --delay: -8s; --size: 18px; --drift: 26px;">!=</span>
+
+        <span class="floating-symbol accent4" style="--x: 9%; --dur: 31s; --delay: -13s; --size: 18px; --drift: 18px;">λ</span>
+        <span class="floating-symbol accent5" style="--x: 18%; --dur: 33s; --delay: -4s; --size: 20px; --drift: -12px;">∞</span>
+        <span class="floating-symbol accent3" style="--x: 26%; --dur: 36s; --delay: -18s; --size: 16px; --drift: 26px;">≠</span>
+        <span class="floating-symbol accent" style="--x: 34%; --dur: 30s; --delay: -20s; --size: 18px; --drift: -20px;">∑</span>
+        <span class="floating-symbol accent2" style="--x: 42%; --dur: 34s; --delay: -16s; --size: 16px; --drift: 16px;">θ</span>
+        <span class="floating-symbol accent4" style="--x: 50%; --dur: 32s; --delay: -22s; --size: 18px; --drift: -24px;">C++</span>
+        <span class="floating-symbol accent5" style="--x: 58%; --dur: 35s; --delay: -19s; --size: 16px; --drift: 22px;">JAVA</span>
+        <span class="floating-symbol accent3" style="--x: 66%; --dur: 37s; --delay: -25s; --size: 20px; --drift: -18px;">SQL</span>
+        <span class="floating-symbol accent" style="--x: 74%; --dur: 38s; --delay: -21s; --size: 18px; --drift: 14px;">AI</span>
+        <span class="floating-symbol accent2" style="--x: 82%; --dur: 40s; --delay: -17s; --size: 16px; --drift: -28px;">&&</span>
+        <span class="floating-symbol accent4" style="--x: 90%; --dur: 39s; --delay: -23s; --size: 18px; --drift: 20px;">∝</span>
+    </div>
+    <div class="page">
+        <div class="topbar">
+            <div class="brand">
+                <div class="logo">ACE</div>
+                <div class="titles">
+                    <h1>ACE CHATBOT</h1>
+                    <p>Ask anything. Learn faster. Built for ACE.</p>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="chip" id="clearBtn" type="button">Clear chat</button>
+            </div>
+        </div>
+
+        <div class="layout">
+            <div class="panel side">
+                <h2>Quick prompts</h2>
+                <p>Try these to get started.</p>
+                <div class="tips">
+                    <div class="tip" data-prompt="Explain this topic like I'm 12: Fractions">
+                        <div class="k">Learning</div>
+                        <div class="v">Explain fractions like I'm 12</div>
+                    </div>
+                    <div class="tip" data-prompt="Create a 5-question quiz on: Basic Algebra">
+                        <div class="k">Quiz</div>
+                        <div class="v">Make a 5-question algebra quiz</div>
+                    </div>
+                    <div class="tip" data-prompt="Give me 3 practice problems for: Percentages with answers">
+                        <div class="k">Practice</div>
+                        <div class="v">3 percentage problems + answers</div>
+                    </div>
+                    <div class="tip" data-prompt="Teach me one programming concept in JavaScript with an example">
+                        <div class="k">Programming</div>
+                        <div class="v">Teach a JS concept with an example</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel chat">
+                <div class="chat-header">
+                    <div class="left">
+                        <span class="badge">Online</span>
+                        <span class="badge" id="modelBadge"></span>
+                    </div>
+                </div>
+
+                <div id="chatbox">
+                    <div class="message bot">
+                        <strong>ACE</strong>
+                        Hi! I’m your ACE Chatbot. Ask me about math, language, puzzles, quizzes, or programming.
+                    </div>
+                </div>
+
+                <div class="composer">
+                    <input type="text" id="userInput" placeholder="Type your message…" autocomplete="off" />
+                    <button id="sendButton" type="button">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const chatbox = document.getElementById('chatbox');
+
+        let cooldownUntilMs = 0;
+        let cooldownTimer = null;
+
+        function setComposerEnabled(enabled) {
+            userInput.disabled = !enabled;
+            sendButton.disabled = !enabled;
+        }
+
+        function startCooldown(seconds) {
+            const s = Math.max(1, Number(seconds) || 0);
+            cooldownUntilMs = Date.now() + (s * 1000);
+            setComposerEnabled(false);
+
+            if (cooldownTimer) {
+                clearInterval(cooldownTimer);
+            }
+
+            const tick = () => {
+                const remainingMs = cooldownUntilMs - Date.now();
+                const remaining = Math.max(0, Math.ceil(remainingMs / 1000));
+                sendButton.textContent = remaining > 0 ? `Wait ${remaining}s` : 'Send';
+                if (remaining <= 0) {
+                    clearInterval(cooldownTimer);
+                    cooldownTimer = null;
+                    sendButton.textContent = 'Send';
+                    setComposerEnabled(true);
+                    userInput.focus();
+                }
+            };
+
+            tick();
+            cooldownTimer = setInterval(tick, 250);
+        }
+
+        function addMessage(sender, message) {
+            const messageDiv = document.createElement('div');
+            const role = sender === 'You' ? 'user' : sender === 'Gemini' ? 'bot' : 'error';
+            messageDiv.className = 'message ' + role;
+
+            if (sender === 'You') {
+                const safe = (message || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                messageDiv.innerHTML = `<strong>${sender}</strong><div class="md">${safe}</div>`;
+            } else {
+                const raw = String(message || '');
+                const html = (window.marked ? window.marked.parse(raw, { breaks: true }) : raw);
+                const clean = (window.DOMPurify ? window.DOMPurify.sanitize(html) : html);
+                messageDiv.innerHTML = `<strong>${sender}</strong><div class="md">${clean}</div>`;
+            }
+            chatbox.appendChild(messageDiv);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            if (Date.now() < cooldownUntilMs) {
+                const remaining = Math.max(0, Math.ceil((cooldownUntilMs - Date.now()) / 1000));
+                addMessage('Error', `Rate limit reached. Try again in **${remaining}s** ⏳`);
+                return;
+            }
+
+            // Disable input and button while processing
+            userInput.disabled = true;
+            sendButton.disabled = true;
+            
+            // Add user message to chat
+            addMessage('You', message);
+            userInput.value = '';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    addMessage('Gemini', data.response);
+                } else {
+                    if (response.status === 429) {
+                        const retry = data.retry_after_seconds;
+                        if (retry) {
+                            addMessage('Error', `Quota/rate limit hit. Please wait **${retry}s** ⏳`);
+                            startCooldown(retry);
+                            return;
+                        }
+                        addMessage('Error', data.error || 'Rate limit hit. Please wait and try again.');
+                        startCooldown(30);
+                        return;
+                    }
+                    addMessage('Error', data.error || 'Failed to get response');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Error', 'Failed to connect to the server. ' + error.message);
+            } finally {
+                // Re-enable input and button
+                if (Date.now() >= cooldownUntilMs) {
+                    userInput.disabled = false;
+                    sendButton.disabled = false;
+                }
+                userInput.focus();
+            }
+        }
+
+        const clearBtn = document.getElementById('clearBtn');
+        const modelBadge = document.getElementById('modelBadge');
+
+        async function refreshModel() {
+            try {
+                const res = await fetch('/api/health');
+                const data = await res.json();
+                modelBadge.textContent = data && data.model ? `Model: ${data.model}` : 'Model: unknown';
+            } catch {
+                modelBadge.textContent = 'Model: offline';
+            }
+        }
+
+        clearBtn.addEventListener('click', function () {
+            chatbox.innerHTML = '';
+            addMessage('ACE', 'Chat cleared. What do you want to learn today?');
+        });
+
+        document.querySelectorAll('.tip').forEach(function (el) {
+            el.addEventListener('click', function () {
+                const prompt = el.getAttribute('data-prompt');
+                if (!prompt) return;
+                userInput.value = prompt;
+                userInput.focus();
+            });
+        });
+
+        sendButton.addEventListener('click', sendMessage);
+
+        // Handle Enter key press
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        refreshModel();
+    </script>
+</body>
+</html>

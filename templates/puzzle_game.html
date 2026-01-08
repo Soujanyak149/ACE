@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧩 Puzzle Master - ACE Learning Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/games.css') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Baloo+Bhai+2:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        .puzzle-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .puzzle-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="puzzle-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><polygon points="10,2 18,6 18,14 10,18 2,14 2,6" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23puzzle-pattern)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .puzzle-title {
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: puzzleTitleFloat 3s ease-in-out infinite;
+        }
+
+        .puzzle-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .puzzle-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+            padding: 0 20px;
+        }
+
+        .puzzle-mode-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .puzzle-mode-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .puzzle-mode-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .puzzle-mode-card h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .puzzle-mode-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .puzzle-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .puzzle-feature {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .start-puzzle-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            margin-top: 15px;
+        }
+
+        .start-puzzle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .back-to-main {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-main:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        @keyframes puzzleTitleFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .floating-shapes {
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-shapes:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shapes:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-shapes:nth-child(3) {
+            bottom: 30%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        .stats-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stats-preview h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .achievements-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .achievements-preview h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+
+        .achievement-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            color: #ffd700;
+        }
+
+        .achievement-info h4 {
+            color: white;
+            margin: 0;
+            text-align: left;
+        }
+
+        .achievement-info p {
+            color: rgba(255, 255, 255, 0.7);
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .quick-test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .quick-test-section h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+
+        .test-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .test-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .test-note {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        /* Game Interface Styles */
+        .puzzle-game-modal {
+            max-width: 900px;
+            width: 90%;
+        }
+
+        .puzzle-game-container {
+            padding: 20px;
+            color: #333;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .game-mode-info h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .game-mode-info p {
+            margin: 0;
+            opacity: 0.9;
+            color: #2c3e50;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+            min-width: 80px;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .puzzle-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .puzzle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .puzzle-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .difficulty-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-badge.easy {
+            background: #4caf50;
+            color: white;
+        }
+
+        .difficulty-badge.medium {
+            background: #ff9800;
+            color: white;
+        }
+
+        .difficulty-badge.hard {
+            background: #f44336;
+            color: white;
+        }
+
+        .puzzle-question {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            line-height: 1.6;
+        }
+
+        .puzzle-input-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .puzzle-input {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .puzzle-input input {
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            min-width: 200px;
+            transition: border-color 0.3s ease;
+        }
+
+        .puzzle-input input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .puzzle-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            max-width: 600px;
+        }
+
+        .option-btn {
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: white;
+            color: #333;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .option-btn.correct {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .option-btn.incorrect {
+            background: #f44336;
+            border-color: #f44336;
+            color: white;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hint-btn {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .hint-btn:hover {
+            background: #ffb300;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .skip-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .skip-btn:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 20px;
+        }
+
+        .feedback.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .feedback.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .feedback.hint {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .feedback.warning {
+            background: #ffeaa7;
+            color: #856404;
+            border: 1px solid #fdcb6e;
+        }
+
+        .feedback.achievement {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            border: 1px solid #ffd700;
+            animation: achievementGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes achievementGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        .game-settings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-group label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .setting-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .setting-group select:focus {
+            border-color: #667eea;
+        }
+
+        .game-end {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .game-end h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .final-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .final-stats .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .final-stats .stat-label {
+            display: block;
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .final-stats .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .game-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .game-actions .control-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .game-stats {
+                justify-content: center;
+            }
+
+            .puzzle-question {
+                font-size: 1.4rem;
+            }
+
+            .puzzle-input {
+                flex-direction: column;
+            }
+
+            .puzzle-input input {
+                min-width: 100%;
+            }
+
+            .puzzle-options {
+                grid-template-columns: 1fr;
+            }
+
+            .game-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .control-btn {
+                width: 100%;
+                max-width: 200px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/" class="back-to-main">← Back to Main</a>
+
+    <div class="puzzle-hero">
+        <div class="floating-shapes">🧩</div>
+        <div class="floating-shapes">🔢</div>
+        <div class="floating-shapes">🧠</div>
+
+        <h1 class="puzzle-title">🧩 Puzzle Solver</h1>
+        <p class="puzzle-subtitle">Enhance logical reasoning, pattern recognition, and problem-solving skills</p>
+    </div>
+
+    <div class="puzzle-modes">
+        <div class="puzzle-mode-card" onclick="startPuzzleGame('sequence')">
+            <span class="puzzle-mode-icon">🔢</span>
+            <h3>Number Sequences</h3>
+            <p>Identify mathematical patterns and progressions to find the next number</p>
+            <div class="puzzle-features">
+                <span class="puzzle-feature">Patterns</span>
+                <span class="puzzle-feature">Logic</span>
+                <span class="puzzle-feature">Math</span>
+            </div>
+            <button class="start-puzzle-btn">Start Sequences</button>
+        </div>
+
+        <div class="puzzle-mode-card" onclick="startPuzzleGame('logic')">
+            <span class="puzzle-mode-icon">🧠</span>
+            <h3>Logic Puzzles</h3>
+            <p>Solve brain teasers that build reasoning and critical thinking skills</p>
+            <div class="puzzle-features">
+                <span class="puzzle-feature">Reasoning</span>
+                <span class="puzzle-feature">Critical Thinking</span>
+                <span class="puzzle-feature">Problem Solving</span>
+            </div>
+            <button class="start-puzzle-btn">Start Logic</button>
+        </div>
+
+        <div class="puzzle-mode-card" onclick="startPuzzleGame('pattern')">
+            <span class="puzzle-mode-icon">🔍</span>
+            <h3>Pattern Recognition</h3>
+            <p>Train your mind to detect and predict visual and logical patterns</p>
+            <div class="puzzle-features">
+                <span class="puzzle-feature">Visual Patterns</span>
+                <span class="puzzle-feature">Recognition</span>
+                <span class="puzzle-feature">Prediction</span>
+            </div>
+            <button class="start-puzzle-btn">Start Patterns</button>
+        </div>
+
+        <div class="puzzle-mode-card" onclick="startPuzzleGame('riddle')">
+            <span class="puzzle-mode-icon">🤔</span>
+            <h3>Riddles</h3>
+            <p>Solve clever word puzzles and riddles to sharpen your thinking</p>
+            <div class="puzzle-features">
+                <span class="puzzle-feature">Word Play</span>
+                <span class="puzzle-feature">Creative Thinking</span>
+                <span class="puzzle-feature">Lateral Thinking</span>
+            </div>
+            <button class="start-puzzle-btn">Start Riddles</button>
+        </div>
+    </div>
+
+    <div class="stats-preview">
+        <h3>📊 Your Puzzle Statistics</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">85%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">2.1s</div>
+                <div class="stat-label">Avg Time</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">89</div>
+                <div class="stat-label">Puzzles Solved</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">15</div>
+                <div class="stat-label">Streak</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="achievements-preview">
+        <h3>🏆 Recent Achievements</h3>
+        <div class="achievement-item">
+            <div class="achievement-icon">🧩</div>
+            <div class="achievement-info">
+                <h4>Puzzle Master</h4>
+                <p>Solved 50 puzzles with 85% accuracy</p>
+            </div>
+        </div>
+        <div class="achievement-item">
+            <div class="achievement-icon">🔥</div>
+            <div class="achievement-info">
+                <h4>Streak Champion</h4>
+                <p>Maintained a 15-puzzle streak</p>
+            </div>
+        </div>
+        <div class="achievement-item">
+            <div class="achievement-icon">⚡</div>
+            <div class="achievement-info">
+                <h4>Speed Solver</h4>
+                <p>Solved 5 puzzles in under 10 seconds</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Test Section -->
+    <div class="quick-test-section">
+        <h3>🧪 Quick Test - Try All Puzzle Types</h3>
+        <div class="test-buttons">
+            <button class="test-btn" onclick="testGameMode('sequence')">Test Sequences</button>
+            <button class="test-btn" onclick="testGameMode('logic')">Test Logic</button>
+            <button class="test-btn" onclick="testGameMode('pattern')">Test Patterns</button>
+            <button class="test-btn" onclick="testGameMode('riddle')">Test Riddles</button>
+        </div>
+        <p class="test-note">Click any button to test the puzzle types quickly!</p>
+    </div>
+
+    <!-- Game Modal -->
+    <div id="gameModal" class="modal">
+        <div class="modal-content puzzle-game-modal">
+            <span class="close" onclick="closeGameModal()">&times;</span>
+            <div id="gameContent"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+    <script>
+        function startPuzzleGame(type) {
+            console.log('Starting puzzle game with type:', type);
+            try {
+                openGameModal();
+                loadPuzzleGame(type);
+            } catch (error) {
+                console.error('Error starting puzzle game:', error);
+                alert('Error starting game. Please try again.');
+            }
+        }
+
+        // Enhanced puzzle game with multiple types
+        function loadPuzzleGame(type = 'sequence') {
+            console.log('Loading puzzle game for type:', type);
+
+            const gameContent = document.getElementById('gameContent');
+
+            if (!gameContent) {
+                console.error('Game content container not found');
+                return;
+            }
+
+            const gameHTML = `
+                <div class="puzzle-game-container">
+                    <div class="game-header">
+                        <div class="game-mode-info">
+                            <h2>${getTypeTitle(type)}</h2>
+                            <p>${getTypeDescription(type)}</p>
+                        </div>
+                        <div class="game-stats">
+                            <div class="stat">
+                                <span class="stat-label">Score</span>
+                                <span class="stat-value" id="score">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Solved</span>
+                                <span class="stat-value" id="solved">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Level</span>
+                                <span class="stat-value" id="level">1</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Streak</span>
+                                <span class="stat-value" id="streak">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="puzzle-container">
+                        <div class="puzzle-header">
+                            <span class="puzzle-number">Puzzle <span id="puzzleNum">1</span></span>
+                            <span class="difficulty-badge" id="difficulty">Easy</span>
+                        </div>
+                        <div class="puzzle-question" id="puzzleQuestion">
+                            Complete the sequence: 2, 4, 6, 8, ?
+                        </div>
+                        <div class="puzzle-input-section">
+                            <div class="puzzle-input">
+                                <input type="text" id="puzzleAnswer" placeholder="Enter your answer" autocomplete="off">
+                                <button class="control-btn submit-btn" onclick="submitAnswer()">
+                                    <span class="btn-icon">✅</span>
+                                    Submit
+                                </button>
+                            </div>
+                            <div class="puzzle-options" id="puzzleOptions" style="display: none;">
+                                <!-- Options will be populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-controls">
+                        <button class="control-btn hint-btn" onclick="showHint()">
+                            <span class="btn-icon">💡</span>
+                            Hint (-10 pts)
+                        </button>
+                        <button class="control-btn skip-btn" onclick="skipPuzzle()">
+                            <span class="btn-icon">⏭️</span>
+                            Skip (-5 pts)
+                        </button>
+                    </div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Progress: <span id="progressText">0/10</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback" id="feedback"></div>
+                    
+                    <div class="game-settings">
+                        <div class="setting-group">
+                            <label>Puzzle Type:</label>
+                            <select id="puzzleType" onchange="updateGameSettings()">
+                                <option value="sequence" ${type === 'sequence' ? 'selected' : ''}>Number Sequences</option>
+                                <option value="logic" ${type === 'logic' ? 'selected' : ''}>Logic Puzzles</option>
+                                <option value="pattern" ${type === 'pattern' ? 'selected' : ''}>Pattern Recognition</option>
+                                <option value="riddle" ${type === 'riddle' ? 'selected' : ''}>Riddles</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label>Difficulty:</label>
+                            <select id="difficultyLevel" onchange="updateGameSettings()">
+                                <option value="adaptive">Adaptive</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            gameContent.innerHTML = gameHTML;
+            console.log('Game HTML loaded, initializing...');
+            initializePuzzleGame(type);
+        }
+
+        function getTypeTitle(type) {
+            const titles = {
+                'sequence': '🔢 Number Sequences',
+                'logic': '🧠 Logic Puzzles',
+                'pattern': '🔍 Pattern Recognition',
+                'riddle': '🤔 Riddles'
+            };
+            return titles[type] || 'Puzzle Solver';
+        }
+
+        function getTypeDescription(type) {
+            const descriptions = {
+                'sequence': 'Find the next number in mathematical sequences',
+                'logic': 'Solve brain teasers and logical problems',
+                'pattern': 'Recognize and predict visual patterns',
+                'riddle': 'Solve clever word puzzles and riddles'
+            };
+            return descriptions[type] || 'Practice your puzzle-solving skills';
+        }
+
+        function initializePuzzleGame(type) {
+            console.log('Initializing puzzle game for type:', type);
+
+            // Initialize game state
+            window.puzzleGameState = {
+                type: type,
+                score: 0,
+                solved: 0,
+                level: 1,
+                puzzleNum: 1,
+                totalPuzzles: 10,
+                currentPuzzle: null,
+                startTime: Date.now(),
+                difficulty: 'adaptive',
+                puzzlesAnswered: 0,
+                correctAnswers: 0,
+                streak: 0
+            };
+
+            // Generate first puzzle
+            generatePuzzle();
+
+            // Focus on input
+            const answerInput = document.getElementById('puzzleAnswer');
+            if (answerInput) {
+                answerInput.focus();
+
+                // Add event listeners
+                answerInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        submitAnswer();
+                    }
+                });
+            }
+
+            console.log('Puzzle game initialized successfully');
+        }
+
+        function generatePuzzle() {
+            const state = window.puzzleGameState;
+            if (!state) {
+                console.error('Game state not found');
+                return;
+            }
+
+            const difficulty = state.difficulty === 'adaptive' ? getAdaptiveDifficulty() : state.difficulty;
+
+            let puzzle;
+            switch (state.type) {
+                case 'sequence':
+                    puzzle = generateSequencePuzzle(difficulty);
+                    break;
+                case 'logic':
+                    puzzle = generateLogicPuzzle(difficulty);
+                    break;
+                case 'pattern':
+                    puzzle = generatePatternPuzzle(difficulty);
+                    break;
+                case 'riddle':
+                    puzzle = generateRiddlePuzzle(difficulty);
+                    break;
+                default:
+                    puzzle = generateSequencePuzzle(difficulty);
+            }
+
+            state.currentPuzzle = puzzle;
+            displayPuzzle(puzzle);
+            updateDifficultyBadge(difficulty);
+        }
+
+        function getAdaptiveDifficulty() {
+            const state = window.puzzleGameState;
+            if (!state) return 'easy';
+
+            const accuracy = state.puzzlesAnswered > 0 ? state.correctAnswers / state.puzzlesAnswered : 0.5;
+
+            if (accuracy > 0.8 && state.streak > 5) return 'hard';
+            if (accuracy > 0.6 && state.streak > 3) return 'medium';
+            return 'easy';
+        }
+
+        // Track used puzzles to prevent repetition
+        if (!window.usedPuzzles) {
+            window.usedPuzzles = {
+                sequence: { easy: [], medium: [], hard: [] },
+                logic: { easy: [], medium: [], hard: [] },
+                pattern: { easy: [], medium: [], hard: [] },
+                riddle: { easy: [], medium: [], hard: [] }
+            };
+        }
+
+        function getUnusedPuzzle(type, difficulty, puzzles) {
+            const used = window.usedPuzzles[type][difficulty];
+
+            // Reset if all puzzles have been used
+            if (used.length >= puzzles.length) {
+                window.usedPuzzles[type][difficulty] = [];
+            }
+
+            // Find an unused puzzle
+            const availablePuzzles = puzzles.filter((_, index) => !used.includes(index));
+
+            if (availablePuzzles.length === 0) {
+                window.usedPuzzles[type][difficulty] = [];
+                return puzzles[Math.floor(Math.random() * puzzles.length)];
+            }
+
+            const randomIndex = Math.floor(Math.random() * availablePuzzles.length);
+            const selectedPuzzle = availablePuzzles[randomIndex];
+            const originalIndex = puzzles.indexOf(selectedPuzzle);
+
+            used.push(originalIndex);
+
+            return { ...selectedPuzzle, difficulty: difficulty };
+        }
+
+        function generateSequencePuzzle(difficulty) {
+            const puzzles = {
+                easy: [
+                    { question: "Complete the sequence: 2, 4, 6, 8, ?", answer: "10", hint: "Add 2 each time" },
+                    { question: "Complete the sequence: 1, 3, 5, 7, ?", answer: "9", hint: "Add 2 each time" },
+                    { question: "Complete the sequence: 5, 10, 15, 20, ?", answer: "25", hint: "Add 5 each time" },
+                    { question: "Complete the sequence: 3, 6, 9, 12, ?", answer: "15", hint: "Add 3 each time" },
+                    { question: "Complete the sequence: 1, 2, 4, 8, ?", answer: "16", hint: "Double each number" },
+                    { question: "Complete the sequence: 10, 20, 30, 40, ?", answer: "50", hint: "Add 10 each time" },
+                    { question: "Complete the sequence: 100, 90, 80, 70, ?", answer: "60", hint: "Subtract 10 each time" },
+                    { question: "Complete the sequence: 4, 8, 12, 16, ?", answer: "20", hint: "Add 4 each time" },
+                    { question: "Complete the sequence: 11, 13, 15, 17, ?", answer: "19", hint: "Add 2 each time" },
+                    { question: "Complete the sequence: 50, 45, 40, 35, ?", answer: "30", hint: "Subtract 5 each time" }
+                ],
+                medium: [
+                    { question: "Complete the sequence: 1, 2, 4, 7, ?", answer: "11", hint: "Add 1, then 2, then 3, then 4" },
+                    { question: "Complete the sequence: 2, 6, 12, 20, ?", answer: "30", hint: "Add 4, then 6, then 8, then 10" },
+                    { question: "Complete the sequence: 1, 4, 9, 16, ?", answer: "25", hint: "Square numbers: 1², 2², 3², 4², 5²" },
+                    { question: "Complete the sequence: 2, 4, 8, 16, ?", answer: "32", hint: "Double each number" },
+                    { question: "Complete the sequence: 1, 3, 6, 10, ?", answer: "15", hint: "Add 2, then 3, then 4, then 5" },
+                    { question: "Complete the sequence: 3, 7, 15, 31, ?", answer: "63", hint: "Double and add 1" },
+                    { question: "Complete the sequence: 5, 11, 23, 47, ?", answer: "95", hint: "Double and add 1" },
+                    { question: "Complete the sequence: 1, 1, 2, 6, ?", answer: "24", hint: "Multiply by 1, 2, 3, 4" },
+                    { question: "Complete the sequence: 100, 50, 25, 12.5, ?", answer: "6.25", hint: "Divide by 2 each time" },
+                    { question: "Complete the sequence: 2, 5, 11, 23, ?", answer: "47", hint: "Double and add 1" }
+                ],
+                hard: [
+                    { question: "Complete the sequence: 1, 1, 2, 3, 5, ?", answer: "8", hint: "Fibonacci sequence: each number is the sum of the two before it" },
+                    { question: "Complete the sequence: 2, 6, 18, 54, ?", answer: "162", hint: "Multiply by 3 each time" },
+                    { question: "Complete the sequence: 1, 8, 27, 64, ?", answer: "125", hint: "Cube numbers: 1³, 2³, 3³, 4³, 5³" },
+                    { question: "Complete the sequence: 2, 3, 5, 7, 11, ?", answer: "13", hint: "Prime numbers in order" },
+                    { question: "Complete the sequence: 1, 4, 9, 16, 25, ?", answer: "36", hint: "Square numbers: 1², 2², 3², 4², 5², 6²" },
+                    { question: "Complete the sequence: 1, 1, 2, 3, 5, 8, ?", answer: "13", hint: "Fibonacci: add previous two" },
+                    { question: "Complete the sequence: 0, 1, 1, 2, 3, 5, 8, ?", answer: "13", hint: "Fibonacci starting with 0" },
+                    { question: "Complete the sequence: 3, 5, 9, 17, 33, ?", answer: "65", hint: "Double and subtract 1" },
+                    { question: "Complete the sequence: 2, 3, 5, 9, 17, ?", answer: "33", hint: "Double and subtract 1" },
+                    { question: "Complete the sequence: 1, 2, 6, 24, 120, ?", answer: "720", hint: "Factorial sequence: 1!, 2!, 3!, 4!, 5!, 6!" }
+                ]
+            };
+
+            const levelPuzzles = puzzles[difficulty] || puzzles.easy;
+            return getUnusedPuzzle('sequence', difficulty, levelPuzzles);
+        }
+
+        function generateLogicPuzzle(difficulty) {
+            const puzzles = {
+                easy: [
+                    { question: "If all roses are flowers and some flowers are red, then:", answer: "Some roses might be red", hint: "Think about logical relationships" },
+                    { question: "A clock shows 3:15. What angle is between the hands?", answer: "7.5", hint: "Hour hand moves 0.5° per minute" },
+                    { question: "If 5 machines take 5 minutes to make 5 widgets, how long for 100 machines to make 100 widgets?", answer: "5", hint: "Each machine makes 1 widget in 5 minutes" },
+                    { question: "Tom has twice as many apples as Jerry. Together they have 12. How many does Tom have?", answer: "8", hint: "Let Jerry have x, Tom has 2x" },
+                    { question: "A bat and ball cost $1.10 together. The bat costs $1 more than the ball. How much is the ball?", answer: "0.05", hint: "If ball is x, bat is x+1" },
+                    { question: "If 3 cats can catch 3 mice in 3 minutes, how many cats to catch 100 mice in 100 minutes?", answer: "3", hint: "Rate stays the same" },
+                    { question: "A book has 100 pages. How many times does the digit 5 appear in the page numbers?", answer: "20", hint: "Count in ones and tens place" },
+                    { question: "Mary's father has 5 daughters. Four are named Nana, Nene, Nini, Nono. What's the 5th name?", answer: "Mary", hint: "Read the first sentence carefully" },
+                    { question: "If you overtake the person in 2nd place in a race, what position are you in?", answer: "2nd", hint: "You take their position" },
+                    { question: "How many months have 28 days?", answer: "12", hint: "All months have at least 28 days" }
+                ],
+                medium: [
+                    { question: "A train leaves at 2:30 PM and arrives at 5:45 PM. How long was the journey in minutes?", answer: "195", hint: "3 hours 15 minutes = 195 minutes" },
+                    { question: "If you have 3 red balls and 4 blue balls, what fraction represents probability of red?", answer: "3/7", hint: "Total balls = 7, red balls = 3" },
+                    { question: "A rectangle has perimeter 20 and area 24. What are dimensions? (smaller number)", answer: "4", hint: "Use formulas P=2(l+w) and A=l×w" },
+                    { question: "Three friends split a bill. Each pays $15. With 20% tip, what's the total bill?", answer: "54", hint: "Base is 45, add 20% tip" },
+                    { question: "A store marks up items by 50% then offers 50% off. What's the final price of a $100 item?", answer: "75", hint: "50% markup then 50% off $150" },
+                    { question: "If 1.5 hens lay 1.5 eggs in 1.5 days, how many eggs do 6 hens lay in 6 days?", answer: "24", hint: "Scale up both dimensions" },
+                    { question: "A number is doubled and then 10 is added. The result is 50. What was the number?", answer: "20", hint: "Work backwards: (x*2)+10=50" },
+                    { question: "In a class of 30, 18 play soccer, 15 play basketball, 8 play both. How many play neither?", answer: "5", hint: "Use inclusion-exclusion principle" },
+                    { question: "A farmer has 17 sheep. All but 9 die. How many are left?", answer: "9", hint: "All but 9 means 9 survive" },
+                    { question: "How many 3-digit numbers have all digits the same?", answer: "9", hint: "111, 222, ... 999" }
+                ],
+                hard: [
+                    { question: "In a group of 100 people, 70 speak English, 45 speak French, 25 speak both. How many speak neither?", answer: "10", hint: "Use inclusion-exclusion" },
+                    { question: "A cube is painted and cut into 27 smaller cubes. How many have exactly 2 painted faces?", answer: "12", hint: "Edge cubes not corners" },
+                    { question: "If a clock loses 2 minutes every hour, how many real hours until it shows correct time?", answer: "360", hint: "It needs to lose 12 hours" },
+                    { question: "A snail climbs 3 feet up a 10-foot wall each day, slides down 2 feet at night. On which day does it reach the top?", answer: "8", hint: "On day 8 it reaches top before sliding" },
+                    { question: "How many trailing zeros in 100 factorial (100!)?", answer: "24", hint: "Count factors of 5" },
+                    { question: "A tank fills in 6 hours with pipe A, 8 hours with pipe B. Both together, how many hours?", answer: "3.43", hint: "Rates add: 1/6 + 1/8 = 7/24 per hour" },
+                    { question: "Three switches outside a room control three bulbs inside. You can flip switches, enter once. Can you determine which controls which? (yes/no)", answer: "yes", hint: "Use heat from bulbs" },
+                    { question: "A number divided by 2, then 3, then 4 gives remainder 1 each time. What's smallest such positive number?", answer: "25", hint: "It's 1 more than LCM(2,3,4)" },
+                    { question: "In a tournament, each player plays every other player once. There are 45 games. How many players?", answer: "10", hint: "Use n(n-1)/2 = 45" },
+                    { question: "If ABCD is a 4-digit number where A×B×C×D = 24 and all different, how many such numbers exist?", answer: "48", hint: "Factor 24 with 4 single digits" }
+                ]
+            };
+
+            const levelPuzzles = puzzles[difficulty] || puzzles.easy;
+            return getUnusedPuzzle('logic', difficulty, levelPuzzles);
+        }
+
+        function generatePatternPuzzle(difficulty) {
+            const puzzles = {
+                easy: [
+                    { question: "What comes next: Circle, Square, Triangle, Circle, Square, ?", answer: "Triangle", hint: "Look for the repeating pattern" },
+                    { question: "What comes next: Red, Blue, Green, Red, Blue, ?", answer: "Green", hint: "Colors repeat in the same order" },
+                    { question: "What comes next: Up, Down, Left, Right, Up, ?", answer: "Down", hint: "Directions cycle in a pattern" },
+                    { question: "What comes next: 1, 2, 1, 2, 1, ?", answer: "2", hint: "Alternating pattern" },
+                    { question: "What comes next: A, B, A, B, A, ?", answer: "B", hint: "Two letters alternating" },
+                    { question: "What comes next: Cat, Dog, Cat, Dog, Cat, ?", answer: "Dog", hint: "Animals alternating" },
+                    { question: "What comes next: Big, Small, Big, Small, Big, ?", answer: "Small", hint: "Sizes alternating" },
+                    { question: "What comes next: Hot, Cold, Hot, Cold, Hot, ?", answer: "Cold", hint: "Temperatures alternating" },
+                    { question: "What comes next: Sun, Moon, Sun, Moon, Sun, ?", answer: "Moon", hint: "Day and night pattern" },
+                    { question: "What comes next: X, O, X, O, X, ?", answer: "O", hint: "Tic-tac-toe pattern" }
+                ],
+                medium: [
+                    { question: "What comes next: A, B, C, D, A, B, C, ?", answer: "D", hint: "Letters repeat in groups of 4" },
+                    { question: "What comes next: 1, 2, 3, 1, 2, 3, 1, ?", answer: "2", hint: "Numbers repeat in groups of 3" },
+                    { question: "What comes next: Star, Moon, Sun, Star, Moon, ?", answer: "Sun", hint: "Celestial bodies repeat in order" },
+                    { question: "What comes next: Red, Orange, Yellow, Red, Orange, ?", answer: "Yellow", hint: "Three colors cycling" },
+                    { question: "What comes next: January, February, March, January, February, ?", answer: "March", hint: "Months cycling" },
+                    { question: "What comes next: Rock, Paper, Scissors, Rock, Paper, ?", answer: "Scissors", hint: "Game sequence" },
+                    { question: "What comes next: Mercury, Venus, Earth, Mercury, Venus, ?", answer: "Earth", hint: "Planets cycling" },
+                    { question: "What comes next: Triangle, Square, Pentagon, Triangle, Square, ?", answer: "Pentagon", hint: "Shapes with 3, 4, 5 sides" },
+                    { question: "What comes next: Do, Re, Mi, Do, Re, ?", answer: "Mi", hint: "Musical notes" },
+                    { question: "What comes next: Apple, Banana, Cherry, Apple, Banana, ?", answer: "Cherry", hint: "Fruits cycling" }
+                ],
+                hard: [
+                    { question: "What comes next: North, East, South, West, North, East, ?", answer: "South", hint: "Compass directions in order" },
+                    { question: "What comes next: Spring, Summer, Fall, Winter, Spring, ?", answer: "Summer", hint: "Seasons repeat in order" },
+                    { question: "What comes next: Monday, Tuesday, Wednesday, Monday, Tuesday, ?", answer: "Wednesday", hint: "Weekdays repeat in order" },
+                    { question: "What comes next: A, C, E, G, A, C, E, ?", answer: "G", hint: "Every other letter" },
+                    { question: "What comes next: 2, 4, 6, 8, 2, 4, 6, ?", answer: "8", hint: "Even numbers cycling" },
+                    { question: "What comes next: Red, Orange, Yellow, Green, Blue, Red, Orange, ?", answer: "Yellow", hint: "Rainbow colors" },
+                    { question: "What comes next: Alpha, Beta, Gamma, Delta, Alpha, Beta, ?", answer: "Gamma", hint: "Greek letters" },
+                    { question: "What comes next: Hydrogen, Helium, Lithium, Hydrogen, Helium, ?", answer: "Lithium", hint: "First three elements" },
+                    { question: "What comes next: Ace, King, Queen, Jack, Ace, King, ?", answer: "Queen", hint: "Card ranks" },
+                    { question: "What comes next: First, Second, Third, Fourth, First, Second, ?", answer: "Third", hint: "Ordinal numbers" }
+                ]
+            };
+
+            const levelPuzzles = puzzles[difficulty] || puzzles.easy;
+            return getUnusedPuzzle('pattern', difficulty, levelPuzzles);
+        }
+
+        function generateRiddlePuzzle(difficulty) {
+            const puzzles = {
+                easy: [
+                    { question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?", answer: "Echo", hint: "Think about sound bouncing back" },
+                    { question: "What has keys, but no locks; space, but no room; and you can enter, but not go in?", answer: "Keyboard", hint: "You use this to type" },
+                    { question: "What gets wetter and wetter the more it dries?", answer: "Towel", hint: "You use this after bathing" },
+                    { question: "What has hands but cannot clap?", answer: "Clock", hint: "It shows time" },
+                    { question: "What has a head and tail but no body?", answer: "Coin", hint: "You use this as money" },
+                    { question: "What has one eye but cannot see?", answer: "Needle", hint: "Used for sewing" },
+                    { question: "What can you catch but not throw?", answer: "Cold", hint: "An illness" },
+                    { question: "What goes up but never comes down?", answer: "Age", hint: "You get older" },
+                    { question: "What has a neck but no head?", answer: "Bottle", hint: "Holds liquid" },
+                    { question: "What has teeth but cannot bite?", answer: "Comb", hint: "Used for hair" }
+                ],
+                medium: [
+                    { question: "The more you take, the more you leave behind. What am I?", answer: "Footsteps", hint: "You make these when you walk" },
+                    { question: "What has cities, but no houses; forests, but no trees; and rivers, but no water?", answer: "Map", hint: "This shows you where things are" },
+                    { question: "What breaks when you say it?", answer: "Silence", hint: "Think about what happens when you speak" },
+                    { question: "I have branches but no fruit, trunk, or leaves. What am I?", answer: "Bank", hint: "Financial institution" },
+                    { question: "What can run but never walks, has a mouth but never talks?", answer: "River", hint: "Body of water" },
+                    { question: "What has words but never speaks?", answer: "Book", hint: "You read this" },
+                    { question: "What has a ring but no finger?", answer: "Phone", hint: "It makes a ringing sound" },
+                    { question: "What goes through towns and over hills but never moves?", answer: "Road", hint: "You drive on this" },
+                    { question: "What has four wheels and flies?", answer: "Garbage truck", hint: "Collects trash" },
+                    { question: "What is full of holes but still holds water?", answer: "Sponge", hint: "Used for cleaning" }
+                ],
+                hard: [
+                    { question: "What comes once in a minute, twice in a moment, but never in a thousand years?", answer: "M", hint: "Look at the spelling of these words" },
+                    { question: "What has legs, but cannot walk?", answer: "Table", hint: "This furniture has four legs" },
+                    { question: "What can travel around the world while sitting in a corner?", answer: "Stamp", hint: "This goes on letters and envelopes" },
+                    { question: "Forward I am heavy, backward I am not. What am I?", answer: "Ton", hint: "A unit of weight" },
+                    { question: "What word becomes shorter when you add two letters to it?", answer: "Short", hint: "Add 'er' to make shorter" },
+                    { question: "What belongs to you but others use it more than you do?", answer: "Name", hint: "People call you by this" },
+                    { question: "What goes all around the world but stays in a corner?", answer: "Stamp", hint: "Used for mail" },
+                    { question: "I am taken from a mine and shut in a wooden case. Everyone uses me. What am I?", answer: "Pencil lead", hint: "Made of graphite" },
+                    { question: "The more of this there is, the less you see. What is it?", answer: "Darkness", hint: "Opposite of light" },
+                    { question: "What is so fragile that saying its name breaks it?", answer: "Silence", hint: "The absence of sound" }
+                ]
+            };
+
+            const levelPuzzles = puzzles[difficulty] || puzzles.easy;
+            return getUnusedPuzzle('riddle', difficulty, levelPuzzles);
+        }
+
+        function displayPuzzle(puzzle) {
+            const questionElement = document.getElementById('puzzleQuestion');
+            const answerInput = document.getElementById('puzzleAnswer');
+            const optionsContainer = document.getElementById('puzzleOptions');
+
+            if (questionElement && answerInput) {
+                questionElement.textContent = puzzle.question;
+                answerInput.value = '';
+                answerInput.focus();
+
+                // Hide options for now (can be shown for multiple choice puzzles)
+                if (optionsContainer) {
+                    optionsContainer.style.display = 'none';
+                }
+            } else {
+                console.error('Puzzle display elements not found');
+            }
+        }
+
+        function updateDifficultyBadge(difficulty) {
+            const badge = document.getElementById('difficulty');
+            if (badge) {
+                badge.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+                badge.className = `difficulty-badge ${difficulty}`;
+            }
+        }
+
+        function submitAnswer() {
+            const state = window.puzzleGameState;
+            if (!state) return;
+
+            const userAnswer = document.getElementById('puzzleAnswer').value.trim().toLowerCase();
+            const correctAnswer = state.currentPuzzle.answer.toLowerCase();
+
+            if (!userAnswer) {
+                showFeedback('Please enter an answer!', 'warning');
+                return;
+            }
+
+            const isCorrect = userAnswer === correctAnswer;
+            state.puzzlesAnswered++;
+
+            if (isCorrect) {
+                state.correctAnswers++;
+                state.solved++;
+                state.streak++;
+                const points = calculatePoints(state.currentPuzzle.difficulty || 'easy', state.streak);
+                state.score += points;
+
+                showFeedback(`Correct! +${points} points (Streak: ${state.streak})`, 'success');
+                playSound('correct');
+
+                // Submit detailed progress to backend
+                if (window.ACEBackend && window.ACEBackend.submitDetailedProgress) {
+                    window.ACEBackend.submitDetailedProgress(
+                        'puzzle',
+                        state.currentPuzzle.question,
+                        userAnswer,
+                        true,
+                        points
+                    );
+                }
+
+                // Check for achievements
+                checkAchievements();
+            } else {
+                state.streak = 0;
+                showFeedback(`Wrong! The answer was "${state.currentPuzzle.answer}"`, 'error');
+                playSound('incorrect');
+
+                // Submit detailed progress to backend for incorrect answer
+                if (window.ACEBackend && window.ACEBackend.submitDetailedProgress) {
+                    window.ACEBackend.submitDetailedProgress(
+                        'puzzle',
+                        state.currentPuzzle.question,
+                        userAnswer,
+                        false,
+                        0
+                    );
+                }
+            }
+
+            updateGameStats();
+
+            // Move to next puzzle after delay
+            setTimeout(() => {
+                nextPuzzle();
+            }, 2000);
+        }
+
+        function calculatePoints(difficulty, streak) {
+            let basePoints = 15;
+
+            // Difficulty multiplier
+            switch (difficulty) {
+                case 'easy': basePoints = 15; break;
+                case 'medium': basePoints = 25; break;
+                case 'hard': basePoints = 35; break;
+            }
+
+            // Streak bonus
+            const streakBonus = Math.floor(streak / 3) * 5;
+
+            return basePoints + streakBonus;
+        }
+
+        function showHint() {
+            const state = window.puzzleGameState;
+            if (!state || !state.currentPuzzle) {
+                console.error('Game state or current puzzle not found');
+                return;
+            }
+
+            const puzzle = state.currentPuzzle;
+
+            // Deduct points for using hint
+            state.score = Math.max(0, state.score - 10);
+
+            showFeedback(`💡 Hint: ${puzzle.hint} (-10 points)`, 'hint');
+            updateGameStats();
+        }
+
+        function skipPuzzle() {
+            const state = window.puzzleGameState;
+            if (!state) {
+                console.error('Game state not found');
+                return;
+            }
+
+            state.score = Math.max(0, state.score - 5);
+            showFeedback('Puzzle skipped! (-5 points)', 'warning');
+            updateGameStats();
+            nextPuzzle();
+        }
+
+        function nextPuzzle() {
+            const state = window.puzzleGameState;
+            if (!state) {
+                console.error('Game state not found');
+                return;
+            }
+
+            state.puzzleNum++;
+
+            if (state.puzzleNum > state.totalPuzzles) {
+                endGame('Congratulations! You completed all puzzles!');
+            } else {
+                generatePuzzle();
+            }
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const state = window.puzzleGameState;
+            if (!state) return;
+
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+
+            if (!progressFill || !progressText) return;
+
+            const progress = (state.puzzleNum - 1) / state.totalPuzzles * 100;
+
+            progressFill.style.width = progress + '%';
+            progressText.textContent = `${state.puzzleNum - 1}/${state.totalPuzzles}`;
+        }
+
+        function updateGameStats() {
+            const state = window.puzzleGameState;
+            if (!state) return;
+
+            const scoreElement = document.getElementById('score');
+            const solvedElement = document.getElementById('solved');
+            const levelElement = document.getElementById('level');
+            const streakElement = document.getElementById('streak');
+            const puzzleNumElement = document.getElementById('puzzleNum');
+
+            if (scoreElement) scoreElement.textContent = state.score;
+            if (solvedElement) solvedElement.textContent = state.solved;
+            if (levelElement) levelElement.textContent = state.level;
+            if (streakElement) streakElement.textContent = state.streak;
+            if (puzzleNumElement) puzzleNumElement.textContent = state.puzzleNum;
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            if (feedback) {
+                feedback.textContent = message;
+                feedback.className = `feedback ${type}`;
+
+                setTimeout(() => {
+                    feedback.textContent = '';
+                    feedback.className = 'feedback';
+                }, 3000);
+            }
+        }
+
+        function checkAchievements() {
+            const state = window.puzzleGameState;
+            if (!state) return;
+
+            // Streak achievements
+            if (state.streak === 5) {
+                showFeedback('🏆 Achievement Unlocked: Streak Master!', 'achievement');
+            } else if (state.streak === 10) {
+                showFeedback('🏆 Achievement Unlocked: Streak Legend!', 'achievement');
+            }
+
+            // Score achievements
+            if (state.score >= 150) {
+                showFeedback('🏆 Achievement Unlocked: Puzzle Master!', 'achievement');
+            } else if (state.score >= 500) {
+                showFeedback('🏆 Achievement Unlocked: Puzzle Champion!', 'achievement');
+            }
+
+            // Solved achievements
+            if (state.solved >= 25) {
+                showFeedback('🏆 Achievement Unlocked: Problem Solver!', 'achievement');
+            }
+        }
+
+        function endGame(message) {
+            const state = window.puzzleGameState;
+            if (!state) return;
+
+            // Calculate final stats
+            const accuracy = state.puzzlesAnswered > 0 ?
+                Math.round((state.correctAnswers / state.puzzlesAnswered) * 100) : 0;
+            const timeElapsed = Math.round((Date.now() - state.startTime) / 1000);
+
+            const gameContent = document.getElementById('gameContent');
+            if (gameContent) {
+                gameContent.innerHTML = `
+                    <div class="game-end">
+                        <h2>${message}</h2>
+                        <div class="final-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Final Score</span>
+                                <span class="stat-value">${state.score}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Accuracy</span>
+                                <span class="stat-value">${accuracy}%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Puzzles Solved</span>
+                                <span class="stat-value">${state.solved}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Time</span>
+                                <span class="stat-value">${timeElapsed}s</span>
+                            </div>
+                        </div>
+                        <div class="game-actions">
+                            <button class="control-btn" onclick="loadPuzzleGame('${state.type}')">Play Again</button>
+                            <button class="control-btn" onclick="closeGameModal()">Back to Menu</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateGameSettings() {
+            const puzzleType = document.getElementById('puzzleType');
+            const difficulty = document.getElementById('difficultyLevel');
+
+            if (puzzleType && difficulty && window.puzzleGameState) {
+                window.puzzleGameState.type = puzzleType.value;
+                window.puzzleGameState.difficulty = difficulty.value;
+            }
+        }
+
+        function playSound(type) {
+            // Placeholder for sound effects
+            console.log(`Playing ${type} sound`);
+        }
+
+        // Test function for quick testing
+        function testGameMode(type) {
+            console.log('Testing puzzle type:', type);
+            try {
+                startPuzzleGame(type);
+            } catch (error) {
+                console.error('Error testing puzzle type:', error);
+                alert('Error testing puzzle type. Please try again.');
+            }
+        }
+
+        // Global error handler
+        window.addEventListener('error', function (e) {
+            console.error('Global error:', e.error);
+        });
+
+        console.log('Puzzle game script loaded successfully');
+    </script>
+</body>
+
+</html>

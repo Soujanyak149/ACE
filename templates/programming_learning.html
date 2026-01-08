@@ -1,0 +1,2270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💻 Programming Learning - ACE</title>
+    <!-- Optimize loading with preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Load critical CSS inline -->
+    <style>
+        /* Critical CSS for fast initial render */
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+    <!-- Defer non-critical CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}" media="print"
+        onload="this.media='all'">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/games.css') }}" media="print"
+        onload="this.media='all'">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        code,
+        pre {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .programming-hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 60px 20px;
+            text-align: center;
+            min-height: 100vh;
+        }
+
+        .lesson-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .topic-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .topic-btn {
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        .topic-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .topic-btn.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .lesson-content {
+            margin: 30px 0;
+        }
+
+        .lesson-section {
+            margin-bottom: 25px;
+        }
+
+        .lesson-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quiz-option {
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .quiz-option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .quiz-option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.5s;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: transform 0.3s;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.05);
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+
+        .feedback.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .feedback.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div style="text-align: center; color: white;">
+            <div class="spinner"></div>
+            <p style="margin-top: 20px; font-size: 18px; font-weight: 600;">Loading Programming Hub...</p>
+        </div>
+    </div>
+
+    <div class="programming-hero" style="display: none;" id="mainContent">
+        <a href="/" class="back-btn">← Back to Home</a>
+
+        <h1 style="color: white; font-size: 3rem; margin-bottom: 10px;">💻 Programming Learning Hub</h1>
+        <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem;">Master Programming: JavaScript, Python, DSA &
+            Computer Science Fundamentals - 18+ Topics!</p>
+
+        <div class="lesson-container">
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-number" id="topicsCompleted">0</div>
+                    <div class="stat-label">Topics Completed</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="questionsCorrect">0</div>
+                    <div class="stat-label">Correct Answers</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="totalScore">0</div>
+                    <div class="stat-label">Total Score</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+
+            <h2 style="text-align: center; margin: 30px 0; color: #667eea;">🎯 Choose Your Learning Path</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 20px;">Comprehensive programming curriculum from
+                basics to advanced concepts!</p>
+
+            <h3 style="text-align: center; color: #764ba2; margin: 20px 0;">🔹 JavaScript Fundamentals</h3>
+            <div class="topic-selector">
+                <button class="topic-btn" onclick="loadTopic('variables')">📦 Variables</button>
+                <button class="topic-btn" onclick="loadTopic('datatypes')">🔤 Data Types</button>
+                <button class="topic-btn" onclick="loadTopic('conditionals')">🔀 Conditionals</button>
+                <button class="topic-btn" onclick="loadTopic('loops')">🔄 Loops</button>
+                <button class="topic-btn" onclick="loadTopic('functions')">⚡ Functions</button>
+                <button class="topic-btn" onclick="loadTopic('arrays')">📚 Arrays</button>
+                <button class="topic-btn" onclick="loadTopic('objects')">🎯 Objects</button>
+                <button class="topic-btn" onclick="loadTopic('strings')">📝 Strings</button>
+                <button class="topic-btn" onclick="loadTopic('dom')">🌐 DOM</button>
+            </div>
+
+            <h3 style="text-align: center; color: #764ba2; margin: 20px 0;">🐍 Python Basics</h3>
+            <div class="topic-selector">
+                <button class="topic-btn" onclick="loadTopic('pythonbasics')">🐍 Python Intro</button>
+                <button class="topic-btn" onclick="loadTopic('pythonlists')">📋 Lists & Tuples</button>
+                <button class="topic-btn" onclick="loadTopic('pythondict')">📖 Dictionaries</button>
+            </div>
+
+            <h3 style="text-align: center; color: #764ba2; margin: 20px 0;">🏗️ Data Structures & Algorithms</h3>
+            <div class="topic-selector">
+                <button class="topic-btn" onclick="loadTopic('linkedlist')">🔗 Linked Lists</button>
+                <button class="topic-btn" onclick="loadTopic('stackqueue')">📚 Stacks & Queues</button>
+                <button class="topic-btn" onclick="loadTopic('trees')">🌳 Trees</button>
+                <button class="topic-btn" onclick="loadTopic('sorting')">⬆️ Sorting</button>
+                <button class="topic-btn" onclick="loadTopic('searching')">🔍 Searching</button>
+                <button class="topic-btn" onclick="loadTopic('recursion')">🔄 Recursion</button>
+            </div>
+
+            <div class="lesson-content" id="lessonContent">
+                <div style="text-align: center; padding: 40px; color: #667eea;">
+                    <i class="fas fa-code" style="font-size: 4rem; margin-bottom: 20px; color: #764ba2;"></i>
+                    <h3 style="color: #333; font-size: 1.8rem; margin-bottom: 15px;">🚀 Ready to Learn Programming?</h3>
+                    <p style="font-size: 1.1rem; color: #666; line-height: 1.6;">
+                        Select any topic above to begin your coding journey!<br>
+                        Each lesson includes:<br>
+                        ✅ Clear explanations with real-world examples<br>
+                        ✅ Interactive code demonstrations<br>
+                        ✅ Key learning points<br>
+                        ✅ Quiz to test your knowledge
+                    </p>
+                    <div
+                        style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1)); border-radius: 15px;">
+                        <h4 style="color: #667eea; margin-bottom: 10px;">💡 Complete Curriculum</h4>
+                        <p style="color: #666;">
+                            <strong>Beginners:</strong> Start with JavaScript fundamentals (Variables → Data Types →
+                            Conditionals)<br>
+                            <strong>Python Learners:</strong> Jump to Python Basics section<br>
+                            <strong>Interview Prep:</strong> Master DSA topics (Linked Lists, Trees, Sorting,
+                            etc.)<br><br>
+                            <strong>18 Total Topics covering JavaScript, Python & DSA!</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Defer non-critical scripts -->
+    <script src="{{ url_for('static', filename='scripts/main.js') }}" defer></script>
+    <script>
+        const programmingTopics = {
+            variables: {
+                title: "📦 Variables - Storing Data",
+                explanation: "Variables are like labeled containers that store information in your program. Imagine them as boxes where you can put different types of data and give each box a name so you can find it later. They're essential for making your programs dynamic and useful!",
+                code: `// Declaring variables with 'let' (can be changed)
+let playerName = "Alex";
+let score = 0;
+let isPlaying = true;
+
+console.log(playerName);  // Output: Alex
+console.log(score);       // Output: 0
+
+// Declaring variables with 'const' (cannot be changed)
+const MAX_LIVES = 3;
+const GAME_TITLE = "Space Adventure";
+
+// Changing variables
+score = score + 10;  // Now score is 10
+playerName = "Sam";  // Now playerName is "Sam"
+
+// MAX_LIVES = 5;  // ❌ Error! Can't change const`,
+                keyPoints: [
+                    "Use 'let' for variables that will change (like scores, counters)",
+                    "Use 'const' for values that stay the same (like game rules, max limits)",
+                    "Variable names should be descriptive (use 'playerScore' not 'x')",
+                    "Variables can store text (strings), numbers, true/false (booleans), and more",
+                    "Always give meaningful names to help others understand your code"
+                ],
+                quiz: {
+                    question: "Which keyword should you use for a variable that will never change?",
+                    options: [
+                        "const",
+                        "let",
+                        "var",
+                        "fixed"
+                    ],
+                    correct: 0
+                }
+            },
+            datatypes: {
+                title: "🔤 Data Types - Understanding Different Kinds of Data",
+                explanation: "Just like in real life we have different types of things (numbers, words, yes/no answers), programming has different data types. Understanding these helps you work with data correctly!",
+                code: `// Numbers - for counting and math
+let age = 25;
+let price = 19.99;
+let temperature = -5;
+
+// Strings - for text
+let firstName = "Sarah";
+let message = 'Hello World!';
+let emoji = "🎉";
+
+// Booleans - for true/false
+let isLoggedIn = true;
+let hasPermission = false;
+
+// Checking data types
+console.log(typeof age);        // "number"
+console.log(typeof firstName);  // "string"
+console.log(typeof isLoggedIn); // "boolean"
+
+// Type conversion
+let number = "42";
+let converted = Number(number);  // Convert string to number
+console.log(typeof converted);   // "number"`,
+                keyPoints: [
+                    "Number: Used for all kinds of numbers (whole numbers and decimals)",
+                    "String: Used for text - put it in quotes (' ' or \" \")",
+                    "Boolean: Only two values - true or false",
+                    "Use typeof to check what type of data you have",
+                    "You can convert between types when needed"
+                ],
+                quiz: {
+                    question: "What data type is this? let isActive = false;",
+                    options: [
+                        "Boolean",
+                        "String",
+                        "Number",
+                        "Text"
+                    ],
+                    correct: 0
+                }
+            },
+            loops: {
+                title: "🔄 Loops - Repeating Actions",
+                explanation: "Loops allow you to run the same code multiple times. Instead of writing the same code again and again, use a loop!",
+                code: `// For loop example
+for (let i = 1; i <= 5; i++) {
+    console.log("Count: " + i);
+}
+// Output: Count: 1, Count: 2, ... Count: 5
+
+// While loop example
+let count = 0;
+while (count < 3) {
+    console.log("Loop " + count);
+    count++;
+}`,
+                keyPoints: [
+                    "Loops execute code repeatedly",
+                    "'for' loops run a specific number of times",
+                    "'while' loops run until a condition is false",
+                    "Use loops to avoid repeating code"
+                ],
+                quiz: {
+                    question: "How many times will this loop run? for (let i = 0; i < 5; i++)",
+                    options: ["5 times", "4 times", "6 times", "Infinite times"],
+                    correct: 0
+                }
+            },
+            functions: {
+                title: "⚡ Functions - Reusable Code Blocks",
+                explanation: "Functions are reusable blocks of code that perform specific tasks. Write once, use many times!",
+                code: `// Function declaration
+function greet(name) {
+    return "Hello, " + name + "!";
+}
+
+// Calling the function
+console.log(greet("Alice"));  // Output: Hello, Alice!
+
+// Arrow function
+const add = (a, b) => {
+    return a + b;
+};
+
+console.log(add(5, 3));  // Output: 8`,
+                keyPoints: [
+                    "Functions group code into reusable blocks",
+                    "Functions can take parameters (inputs)",
+                    "Functions can return values (outputs)",
+                    "Use functions to organize your code"
+                ],
+                quiz: {
+                    question: "What does the 'return' keyword do in a function?",
+                    options: [
+                        "Sends a value back to where the function was called",
+                        "Stops the program",
+                        "Prints to console",
+                        "Creates a new variable"
+                    ],
+                    correct: 0
+                }
+            },
+            arrays: {
+                title: "📚 Arrays - Lists of Data",
+                explanation: "Arrays store multiple values in a single variable. Perfect for managing lists of items!",
+                code: `// Creating an array
+let fruits = ["apple", "banana", "orange"];
+
+// Accessing elements
+console.log(fruits[0]);  // Output: apple
+
+// Array methods
+fruits.push("grape");     // Add to end
+fruits.pop();             // Remove from end
+console.log(fruits.length);  // Get size
+
+// Looping through arrays
+fruits.forEach(fruit => {
+    console.log(fruit);
+});`,
+                keyPoints: [
+                    "Arrays store multiple values in order",
+                    "Access items using index (starting at 0)",
+                    "Arrays have useful methods like push, pop, map",
+                    "Arrays can hold different data types"
+                ],
+                quiz: {
+                    question: "What is the index of the first element in an array?",
+                    options: ["0", "1", "-1", "undefined"],
+                    correct: 0
+                }
+            },
+            conditionals: {
+                title: "🔀 Conditionals - Making Decisions",
+                explanation: "Conditionals allow your code to make decisions based on conditions. If this, then that!",
+                code: `// If-else statement
+let age = 18;
+if (age >= 18) {
+    console.log("You can vote!");
+} else {
+    console.log("Too young to vote");
+}
+
+// If-else if-else
+let score = 85;
+if (score >= 90) {
+    console.log("Grade: A");
+} else if (score >= 80) {
+    console.log("Grade: B");
+} else {
+    console.log("Grade: C");
+}`,
+                keyPoints: [
+                    "Conditionals execute code based on conditions",
+                    "'if' checks if condition is true",
+                    "'else if' provides alternative conditions",
+                    "'else' runs when all conditions are false"
+                ],
+                quiz: {
+                    question: "What will this output? if (5 > 3) { console.log('Yes'); } else { console.log('No'); }",
+                    options: ["Yes", "No", "Error", "Nothing"],
+                    correct: 0
+                }
+            },
+            objects: {
+                title: "🎯 Objects - Structured Data",
+                explanation: "Objects are like containers that hold multiple related pieces of information together. Think of an object as a profile card that contains all details about something - like a student profile with name, age, grades, etc. They help organize complex data!",
+                code: `// Creating a student object
+let student = {
+    name: "Emma",
+    age: 20,
+    grade: "A",
+    subjects: ["Math", "Science", "English"],
+    isEnrolled: true,
+    
+    // Method (function inside object)
+    introduce: function() {
+        return "Hi! I'm " + this.name + ", age " + this.age;
+    },
+    
+    getGPA: function() {
+        return this.grade === "A" ? 4.0 : 3.5;
+    }
+};
+
+// Accessing properties
+console.log(student.name);           // Emma
+console.log(student["age"]);         // 20
+console.log(student.introduce());    // Hi! I'm Emma, age 20
+console.log(student.subjects[0]);    // Math
+
+// Modifying properties
+student.age = 21;
+student.newSubject = "Art";  // Adding new property`,
+                keyPoints: [
+                    "Objects group related data together (name, age, etc.)",
+                    "Use curly braces {} to create objects",
+                    "Properties are key:value pairs separated by commas",
+                    "Access properties with dot notation (student.name) or brackets",
+                    "Objects can contain functions called 'methods'",
+                    "Perfect for representing real-world things (users, products, etc.)"
+                ],
+                quiz: {
+                    question: "How do you call a method 'sayHello' from object 'user'?",
+                    options: ["user.sayHello()", "user->sayHello()", "sayHello(user)", "user[sayHello]"],
+                    correct: 0
+                }
+            },
+            strings: {
+                title: "📝 Strings - Working with Text",
+                explanation: "Strings are sequences of characters used to represent text. They're everywhere in programming - from user names to messages to website content. Learning to manipulate strings is super important!",
+                code: `// Creating strings
+let greeting = "Hello";
+let name = 'World';
+let message = \`Welcome, \${name}!\`;  // Template literal
+
+// String properties and methods
+console.log(greeting.length);           // 5
+console.log(greeting.toUpperCase());    // HELLO
+console.log(name.toLowerCase());        // world
+
+// Combining strings (concatenation)
+let fullGreeting = greeting + " " + name;  // "Hello World"
+let modern = \`\${greeting} \${name}!\`;      // "Hello World!"
+
+// Useful string methods
+let text = "JavaScript is awesome";
+console.log(text.includes("awesome"));  // true
+console.log(text.split(" "));          // ["JavaScript", "is", "awesome"]
+console.log(text.replace("awesome", "fun"));  // "JavaScript is fun"
+console.log(text.slice(0, 10));        // "JavaScript"
+
+// Getting individual characters
+console.log(text[0]);          // "J"
+console.log(text.charAt(0));   // "J"`,
+                keyPoints: [
+                    "Strings hold text - use quotes (single ', double \", or backticks \`)",
+                    "Template literals (\`) let you embed variables with \${variable}",
+                    ".length tells you how many characters are in the string",
+                    ".toUpperCase() and .toLowerCase() change the case",
+                    ".includes() checks if a string contains another string",
+                    ".split() breaks a string into an array of words/parts",
+                    "Strings are immutable - methods return new strings, don't change the original"
+                ],
+                quiz: {
+                    question: "What does 'Hello'.length return?",
+                    options: ["5", "4", "6", "\"Hello\""],
+                    correct: 0
+                }
+            },
+            dom: {
+                title: "🌐 DOM Manipulation - Making Web Pages Interactive",
+                explanation: "The DOM (Document Object Model) lets you control and change web pages using JavaScript. You can add, remove, or modify HTML elements, change styles, respond to clicks - this is how websites become interactive and dynamic!",
+                code: `// Selecting HTML elements
+let title = document.getElementById('title');
+let buttons = document.querySelectorAll('.btn');
+let firstPara = document.querySelector('p');
+
+// Changing content
+title.textContent = "New Title!";
+title.innerHTML = "<h1>Styled Title</h1>";
+
+// Changing styles
+title.style.color = "blue";
+title.style.fontSize = "2rem";
+title.style.backgroundColor = "#f0f0f0";
+
+// Adding/removing CSS classes
+title.classList.add('highlight');
+title.classList.remove('hidden');
+title.classList.toggle('active');
+
+// Creating and adding new elements
+let newDiv = document.createElement('div');
+newDiv.textContent = "I'm a new element!";
+newDiv.className = "box";
+document.body.appendChild(newDiv);
+
+// Event listeners (responding to user actions)
+let button = document.querySelector('#myButton');
+button.addEventListener('click', function() {
+    alert('Button clicked!');
+    button.textContent = "Clicked!";
+    button.style.backgroundColor = "green";
+});
+
+// Practical example: Toggle visibility
+let toggleBtn = document.querySelector('#toggle');
+let content = document.querySelector('#content');
+
+toggleBtn.addEventListener('click', function() {
+    content.classList.toggle('hidden');
+});`,
+                keyPoints: [
+                    "Use getElementById() or querySelector() to find HTML elements",
+                    "Change text with .textContent or .innerHTML",
+                    "Modify styles directly with .style.property",
+                    "Add/remove CSS classes with .classList methods",
+                    "Create new elements with createElement() and add with appendChild()",
+                    "addEventListener() lets you respond to user actions (clicks, typing, etc.)",
+                    "This is how you make websites interactive and responsive to users!"
+                ],
+                quiz: {
+                    question: "Which method finds an element with id='header'?",
+                    options: [
+                        "document.getElementById('header')",
+                        "document.getElement('header')",
+                        "document.findById('header')",
+                        "document.select('#header')"
+                    ],
+                    correct: 0
+                }
+            },
+            pythonbasics: {
+                title: "🐍 Python Basics - Getting Started with Python",
+                explanation: "Python is one of the most popular programming languages! It's known for being easy to read and write. Perfect for beginners and professionals alike. Used in web development, data science, AI, automation, and more!",
+                code: `# Python Introduction
+# Print to console
+print("Hello, World!")
+print("Welcome to Python!")
+
+# Variables in Python (no need for let/const)
+name = "Alice"
+age = 25
+is_student = True
+height = 5.6
+
+# Basic math operations
+x = 10
+y = 3
+print(x + y)  # Addition: 13
+print(x - y)  # Subtraction: 7
+print(x * y)  # Multiplication: 30
+print(x / y)  # Division: 3.333...
+print(x // y) # Floor division: 3
+print(x % y)  # Modulus (remainder): 1
+print(x ** y) # Power: 1000
+
+# Input from user
+user_name = input("Enter your name: ")
+print(f"Hello, {user_name}!")  # f-string
+
+# Comments
+# This is a single line comment
+'''
+This is a
+multi-line comment
+'''`,
+                keyPoints: [
+                    "Python uses indentation (spaces/tabs) instead of curly braces {}",
+                    "No semicolons needed at end of lines",
+                    "Variables don't need type declaration - Python figures it out",
+                    "print() displays output to console",
+                    "input() gets user input as a string",
+                    "f-strings (f'...{variable}...') make string formatting easy",
+                    "Python is case-sensitive (Name ≠ name)"
+                ],
+                quiz: {
+                    question: "How do you print 'Hello World' in Python?",
+                    options: [
+                        "print('Hello World')",
+                        "console.log('Hello World')",
+                        "echo('Hello World')",
+                        "System.out.println('Hello World')"
+                    ],
+                    correct: 0
+                }
+            },
+            pythonlists: {
+                title: "📋 Python Lists & Tuples - Collections of Data",
+                explanation: "Lists are Python's version of arrays - ordered collections that can hold any type of data. Lists are mutable (changeable), while tuples are immutable (fixed). Both are extremely useful for storing multiple items!",
+                code: `# Lists - mutable (changeable)
+fruits = ["apple", "banana", "orange"]
+numbers = [1, 2, 3, 4, 5]
+mixed = [1, "hello", True, 3.14]  # Can mix types!
+
+# Accessing elements (0-indexed)
+print(fruits[0])  # apple
+print(fruits[-1]) # orange (last item)
+
+# List methods
+fruits.append("grape")      # Add to end
+fruits.insert(1, "mango")   # Insert at index 1
+fruits.remove("banana")     # Remove specific item
+fruits.pop()                # Remove last item
+fruits.sort()               # Sort alphabetically
+fruits.reverse()            # Reverse order
+
+# List slicing
+numbers = [1, 2, 3, 4, 5]
+print(numbers[1:4])   # [2, 3, 4] (index 1 to 3)
+print(numbers[:3])    # [1, 2, 3] (start to index 2)
+print(numbers[2:])    # [3, 4, 5] (index 2 to end)
+
+# List comprehension (advanced)
+squares = [x**2 for x in range(1, 6)]  # [1, 4, 9, 16, 25]
+
+# Tuples - immutable (cannot change)
+coordinates = (10, 20)
+rgb = (255, 0, 128)
+# tuples.append(30)  # ❌ ERROR! Can't modify tuples
+
+# Tuple unpacking
+x, y = coordinates  # x=10, y=20`,
+                keyPoints: [
+                    "Lists use square brackets [] and are mutable",
+                    "Access items with index starting at 0",
+                    "Negative indices count from the end (-1 is last item)",
+                    "append(), insert(), remove(), pop() modify lists",
+                    "Slicing [start:end] creates a sublist",
+                    "Tuples use parentheses () and cannot be changed after creation",
+                    "Tuples are faster and use less memory than lists"
+                ],
+                quiz: {
+                    question: "What does fruits[1:3] return if fruits = ['apple', 'banana', 'cherry', 'date']?",
+                    options: [
+                        "['banana', 'cherry']",
+                        "['apple', 'banana', 'cherry']",
+                        "['banana', 'cherry', 'date']",
+                        "['cherry', 'date']"
+                    ],
+                    correct: 0
+                }
+            },
+            pythondict: {
+                title: "📖 Python Dictionaries - Key-Value Storage",
+                explanation: "Dictionaries store data as key-value pairs (like a real dictionary with words and definitions!). They're similar to JavaScript objects but with some Python-specific features. Perfect for organizing related information!",
+                code: `# Creating dictionaries
+student = {
+    "name": "Emma",
+    "age": 20,
+    "grade": "A",
+    "subjects": ["Math", "Science", "English"]
+}
+
+# Accessing values
+print(student["name"])        # Emma
+print(student.get("age"))     # 20
+print(student.get("city", "Unknown"))  # Returns "Unknown" if key doesn't exist
+
+# Adding/updating values
+student["email"] = "emma@school.com"  # Add new key
+student["age"] = 21                    # Update existing key
+
+# Dictionary methods
+print(student.keys())         # All keys
+print(student.values())       # All values
+print(student.items())        # Key-value pairs
+
+# Looping through dictionary
+for key, value in student.items():
+    print(f"{key}: {value}")
+
+# Checking if key exists
+if "name" in student:
+    print("Name exists!")
+
+# Dictionary comprehension
+squares = {x: x**2 for x in range(1, 6)}
+# {1: 1, 2: 4, 3: 9, 4: 16, 5: 25}
+
+# Nested dictionaries
+class_data = {
+    "student1": {"name": "Alice", "score": 95},
+    "student2": {"name": "Bob", "score": 87}
+}`,
+                keyPoints: [
+                    "Dictionaries use curly braces {} with key:value pairs",
+                    "Access values using square brackets dict[key] or .get(key)",
+                    ".get() is safer - returns None instead of error if key missing",
+                    "Keys must be unique and immutable (strings, numbers, tuples)",
+                    "Values can be any data type including lists and other dictionaries",
+                    "Use 'in' operator to check if key exists",
+                    "Dictionaries are unordered (though Python 3.7+ maintains insertion order)"
+                ],
+                quiz: {
+                    question: "How do you safely get a value from a dictionary without causing an error?",
+                    options: [
+                        "dict.get('key', default_value)",
+                        "dict['key']",
+                        "dict.key",
+                        "dict->key"
+                    ],
+                    correct: 0
+                }
+            },
+            linkedlist: {
+                title: "🔗 Linked Lists - Dynamic Data Structure",
+                explanation: "Unlike arrays, linked lists don't store data in contiguous memory. Each element (node) contains data and a reference to the next node. Great for insertions and deletions! Understanding linked lists is fundamental for DSA interviews.",
+                code: `// Linked List Node Structure
+class Node {
+    constructor(data) {
+        this.data = data;
+        this.next = null;
+    }
+}
+
+class LinkedList {
+    constructor() {
+        this.head = null;
+        this.size = 0;
+    }
+    
+    // Add node at end
+    append(data) {
+        const newNode = new Node(data);
+        
+        if (!this.head) {
+            this.head = newNode;
+            this.size++;
+            return;
+        }
+        
+        let current = this.head;
+        while (current.next) {
+            current = current.next;
+        }
+        current.next = newNode;
+        this.size++;
+    }
+    
+    // Add node at beginning
+    prepend(data) {
+        const newNode = new Node(data);
+        newNode.next = this.head;
+        this.head = newNode;
+        this.size++;
+    }
+    
+    // Print all nodes
+    printList() {
+        let current = this.head;
+        let result = [];
+        while (current) {
+            result.push(current.data);
+            current = current.next;
+        }
+        console.log(result.join(' -> '));
+    }
+}
+
+// Usage
+const list = new LinkedList();
+list.append(10);
+list.append(20);
+list.prepend(5);
+list.printList();  // 5 -> 10 -> 20`,
+                keyPoints: [
+                    "Each node contains data and a pointer to the next node",
+                    "Head points to the first node, last node points to null",
+                    "Dynamic size - grows and shrinks as needed",
+                    "Insertions/deletions at beginning are O(1) time",
+                    "Accessing elements is O(n) - must traverse from head",
+                    "No random access like arrays (can't directly access middle element)",
+                    "Types: Singly linked (one direction), Doubly linked (two directions)"
+                ],
+                quiz: {
+                    question: "What is the time complexity of inserting at the beginning of a linked list?",
+                    options: [
+                        "O(1)",
+                        "O(n)",
+                        "O(log n)",
+                        "O(n²)"
+                    ],
+                    correct: 0
+                }
+            },
+            stackqueue: {
+                title: "📚 Stacks & Queues - Linear Data Structures",
+                explanation: "Stacks (LIFO - Last In First Out) are like a stack of plates. Queues (FIFO - First In First Out) are like a line at a store. Both are essential for many algorithms and real-world applications!",
+                code: `// STACK Implementation
+class Stack {
+    constructor() {
+        this.items = [];
+    }
+    
+    push(element) {
+        this.items.push(element);
+    }
+    
+    pop() {
+        if (this.isEmpty()) return null;
+        return this.items.pop();
+    }
+    
+    peek() {
+        return this.items[this.items.length - 1];
+    }
+    
+    isEmpty() {
+        return this.items.length === 0;
+    }
+}
+
+// Stack usage
+const stack = new Stack();
+stack.push(10);
+stack.push(20);
+stack.push(30);
+console.log(stack.pop());   // 30 (last in, first out)
+console.log(stack.peek());  // 20
+
+// QUEUE Implementation
+class Queue {
+    constructor() {
+        this.items = [];
+    }
+    
+    enqueue(element) {
+        this.items.push(element);
+    }
+    
+    dequeue() {
+        if (this.isEmpty()) return null;
+        return this.items.shift();
+    }
+    
+    front() {
+        return this.items[0];
+    }
+    
+    isEmpty() {
+        return this.items.length === 0;
+    }
+}
+
+// Queue usage
+const queue = new Queue();
+queue.enqueue("First");
+queue.enqueue("Second");
+queue.enqueue("Third");
+console.log(queue.dequeue());  // "First" (first in, first out)
+console.log(queue.front());    // "Second"`,
+                keyPoints: [
+                    "Stack: LIFO (Last In, First Out) - like browser back button, undo function",
+                    "Stack operations: push() adds to top, pop() removes from top, peek() views top",
+                    "Queue: FIFO (First In, First Out) - like waiting in line, printer queue",
+                    "Queue operations: enqueue() adds to back, dequeue() removes from front",
+                    "Both have O(1) time complexity for add/remove operations",
+                    "Used in: function calls (stack), breadth-first search (queue), task scheduling",
+                    "Can be implemented with arrays or linked lists"
+                ],
+                quiz: {
+                    question: "In a queue, if you add items 1, 2, 3 in order, which item comes out first?",
+                    options: [
+                        "1",
+                        "3",
+                        "2",
+                        "All at once"
+                    ],
+                    correct: 0
+                }
+            },
+            trees: {
+                title: "🌳 Trees - Hierarchical Data Structure",
+                explanation: "Trees are hierarchical structures with a root node and children. Binary trees have at most 2 children per node. Trees are used in file systems, databases, decision-making algorithms, and much more!",
+                code: `// Binary Tree Node
+class TreeNode {
+    constructor(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+class BinaryTree {
+    constructor() {
+        this.root = null;
+    }
+    
+    // Insert node
+    insert(value) {
+        const newNode = new TreeNode(value);
+        
+        if (!this.root) {
+            this.root = newNode;
+            return;
+        }
+        
+        const queue = [this.root];
+        while (queue.length > 0) {
+            const current = queue.shift();
+            
+            if (!current.left) {
+                current.left = newNode;
+                return;
+            } else {
+                queue.push(current.left);
+            }
+            
+            if (!current.right) {
+                current.right = newNode;
+                return;
+            } else {
+                queue.push(current.right);
+            }
+        }
+    }
+    
+    // In-order traversal (Left, Root, Right)
+    inOrder(node = this.root, result = []) {
+        if (node) {
+            this.inOrder(node.left, result);
+            result.push(node.value);
+            this.inOrder(node.right, result);
+        }
+        return result;
+    }
+}
+
+// Usage
+const tree = new BinaryTree();
+tree.insert(1);
+tree.insert(2);
+tree.insert(3);
+tree.insert(4);
+console.log(tree.inOrder());  // [4, 2, 1, 3]`,
+                keyPoints: [
+                    "Root: topmost node, Leaf: nodes with no children",
+                    "Binary Tree: each node has at most 2 children (left and right)",
+                    "Binary Search Tree (BST): left child < parent < right child",
+                    "Tree Traversals: In-order, Pre-order, Post-order, Level-order",
+                    "Used in: file systems, HTML DOM, decision trees, databases (B-trees)",
+                    "Height: longest path from root to leaf",
+                    "Balanced trees provide O(log n) search, insert, delete"
+                ],
+                quiz: {
+                    question: "What is the maximum number of children a binary tree node can have?",
+                    options: [
+                        "2",
+                        "1",
+                        "3",
+                        "Unlimited"
+                    ],
+                    correct: 0
+                }
+            },
+            sorting: {
+                title: "⬆️ Sorting Algorithms - Organizing Data",
+                explanation: "Sorting is arranging data in order (ascending or descending). Essential for optimizing search, data analysis, and many other operations. Different algorithms have different trade-offs!",
+                code: `// 1. BUBBLE SORT - Simple but slow (O(n²))
+function bubbleSort(arr) {
+    const n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                // Swap
+                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+            }
+        }
+    }
+    return arr;
+}
+
+// 2. SELECTION SORT - Finds minimum and swaps (O(n²))
+function selectionSort(arr) {
+    const n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+        let minIdx = i;
+        for (let j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+    }
+    return arr;
+}
+
+// 3. MERGE SORT - Divide and conquer (O(n log n))
+function mergeSort(arr) {
+    if (arr.length <= 1) return arr;
+    
+    const mid = Math.floor(arr.length / 2);
+    const left = mergeSort(arr.slice(0, mid));
+    const right = mergeSort(arr.slice(mid));
+    
+    return merge(left, right);
+}
+
+function merge(left, right) {
+    const result = [];
+    let i = 0, j = 0;
+    
+    while (i < left.length && j < right.length) {
+        if (left[i] < right[j]) {
+            result.push(left[i++]);
+        } else {
+            result.push(right[j++]);
+        }
+    }
+    
+    return result.concat(left.slice(i), right.slice(j));
+}
+
+// Usage
+console.log(bubbleSort([64, 34, 25, 12, 22]));
+// Output: [12, 22, 25, 34, 64]`,
+                keyPoints: [
+                    "Bubble Sort: Simple but slow O(n²) - compares adjacent elements",
+                    "Selection Sort: Finds minimum each iteration O(n²)",
+                    "Insertion Sort: Builds sorted array one element at a time O(n²)",
+                    "Merge Sort: Divide and conquer O(n log n) - stable and efficient",
+                    "Quick Sort: Fastest average case O(n log n) - uses pivot",
+                    "Time complexity matters for large datasets",
+                    "Stable sorting preserves order of equal elements"
+                ],
+                quiz: {
+                    question: "Which sorting algorithm has the best average time complexity?",
+                    options: [
+                        "Merge Sort O(n log n)",
+                        "Bubble Sort O(n²)",
+                        "Selection Sort O(n²)",
+                        "All are equal"
+                    ],
+                    correct: 0
+                }
+            },
+            searching: {
+                title: "🔍 Searching Algorithms - Finding Data",
+                explanation: "Searching is finding a specific element in a collection. Linear search checks every element, while binary search (for sorted data) is much faster by dividing the search space in half!",
+                code: `// 1. LINEAR SEARCH - Check every element O(n)
+function linearSearch(arr, target) {
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === target) {
+            return i;  // Return index if found
+        }
+    }
+    return -1;  // Not found
+}
+
+// 2. BINARY SEARCH - For sorted arrays O(log n)
+function binarySearch(arr, target) {
+    let left = 0;
+    let right = arr.length - 1;
+    
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        
+        if (arr[mid] === target) {
+            return mid;  // Found!
+        } else if (arr[mid] < target) {
+            left = mid + 1;  // Search right half
+        } else {
+            right = mid - 1;  // Search left half
+        }
+    }
+    
+    return -1;  // Not found
+}
+
+// 3. RECURSIVE BINARY SEARCH
+function binarySearchRecursive(arr, target, left = 0, right = arr.length - 1) {
+    if (left > right) return -1;
+    
+    const mid = Math.floor((left + right) / 2);
+    
+    if (arr[mid] === target) return mid;
+    if (arr[mid] < target) {
+        return binarySearchRecursive(arr, target, mid + 1, right);
+    }
+    return binarySearchRecursive(arr, target, left, mid - 1);
+}
+
+// Usage
+const numbers = [2, 5, 8, 12, 16, 23, 38, 45, 56, 67, 78];
+
+console.log(linearSearch(numbers, 23));        // 5
+console.log(binarySearch(numbers, 45));        // 7
+console.log(binarySearchRecursive(numbers, 38)); // 6`,
+                keyPoints: [
+                    "Linear Search: O(n) - checks every element, works on unsorted data",
+                    "Binary Search: O(log n) - requires sorted array, much faster",
+                    "Binary search divides search space in half each step",
+                    "log₂(1000) = 10 steps vs 1000 steps for linear search!",
+                    "Binary search can be iterative or recursive",
+                    "Always sort first if using binary search",
+                    "Used in: dictionaries, databases, autocomplete, game AI"
+                ],
+                quiz: {
+                    question: "Binary search requires the array to be:",
+                    options: [
+                        "Sorted",
+                        "Unsorted",
+                        "Empty",
+                        "Reversed"
+                    ],
+                    correct: 0
+                }
+            },
+            pythonlists: {
+                title: "📋 Python Lists & Tuples - Collections in Python",
+                explanation: "Lists are Python's most versatile data structure! Like arrays in JavaScript but more powerful. Tuples are similar but immutable (can't be changed after creation). Both are essential for storing collections of data in Python.",
+                code: `# LISTS - Mutable (changeable)
+# Creating lists
+fruits = ["apple", "banana", "cherry"]
+numbers = [1, 2, 3, 4, 5]
+mixed = [1, "hello", True, 3.14]  # Can mix types!
+
+# Accessing elements (indexing starts at 0)
+print(fruits[0])      # apple
+print(fruits[-1])     # cherry (negative index from end)
+print(fruits[0:2])    # ['apple', 'banana'] (slicing)
+
+# Modifying lists
+fruits.append("orange")      # Add to end
+fruits.insert(1, "mango")   # Insert at position
+fruits.remove("banana")     # Remove specific item
+fruits.pop()                # Remove last item
+fruits[0] = "grape"        # Change specific item
+
+# Useful list methods
+print(len(fruits))          # Get length
+print("apple" in fruits)    # Check if exists
+fruits.sort()              # Sort in place
+fruits.reverse()           # Reverse order
+
+# List comprehension (powerful feature!)
+squares = [x**2 for x in range(1, 6)]  # [1, 4, 9, 16, 25]
+evens = [x for x in range(10) if x % 2 == 0]  # [0,2,4,6,8]
+
+# TUPLES - Immutable (cannot change)
+coordinates = (10, 20)
+rgb_color = (255, 128, 0)
+
+# Accessing tuples (same as lists)
+print(coordinates[0])  # 10
+
+# coordinates[0] = 15  # ❌ ERROR! Can't modify tuples
+
+# Tuple unpacking
+x, y = coordinates     # x=10, y=20
+r, g, b = rgb_color   # r=255, g=128, b=0`,
+                keyPoints: [
+                    "Lists use square brackets [], tuples use parentheses ()",
+                    "Lists are mutable (can change), tuples are immutable",
+                    "Both can contain any data types and can mix types",
+                    "Negative indexing: -1 is last item, -2 is second last",
+                    "Slicing: list[start:end] gets a portion of the list",
+                    "List comprehension creates lists in one line - very Pythonic!",
+                    "Tuples are faster and use less memory than lists",
+                    "Use tuples for fixed data (coordinates, RGB colors, etc.)"
+                ],
+                quiz: {
+                    question: "What's the main difference between lists and tuples?",
+                    options: [
+                        "Lists can be modified, tuples cannot",
+                        "Tuples can be modified, lists cannot",
+                        "Lists use (), tuples use []",
+                        "There is no difference"
+                    ],
+                    correct: 0
+                }
+            },
+            pythondict: {
+                title: "📖 Python Dictionaries - Key-Value Pairs",
+                explanation: "Dictionaries store data as key-value pairs, like a real dictionary where you look up a word (key) to get its definition (value). Super useful for organizing related data! Similar to objects in JavaScript.",
+                code: `# Creating dictionaries
+student = {
+    "name": "Alice",
+    "age": 20,
+    "grade": "A",
+    "courses": ["Math", "Science", "English"]
+}
+
+# Accessing values
+print(student["name"])           # Alice
+print(student.get("age"))        # 20
+print(student.get("gpa", 0.0))   # 0.0 (default if key doesn't exist)
+
+# Adding/modifying entries
+student["email"] = "alice@email.com"  # Add new key
+student["age"] = 21                    # Update existing
+student.update({"gpa": 3.8, "year": 2})  # Update multiple
+
+# Dictionary methods
+print(student.keys())      # Get all keys
+print(student.values())    # Get all values  
+print(student.items())     # Get key-value pairs
+
+# Checking if key exists
+if "email" in student:
+    print("Email found!")
+
+# Removing items
+del student["courses"]          # Delete specific key
+removed = student.pop("gpa")    # Remove and return value
+student.clear()                # Remove all items
+
+# Dictionary comprehension
+squares_dict = {x: x**2 for x in range(1, 6)}
+# {1: 1, 2: 4, 3: 9, 4: 16, 5: 25}
+
+# Nested dictionaries
+users = {
+    "user1": {"name": "Bob", "age": 25},
+    "user2": {"name": "Carol", "age": 30}
+}
+
+print(users["user1"]["name"])  # Bob
+
+# Looping through dictionary
+for key, value in student.items():
+    print(f"{key}: {value}")`,
+                keyPoints: [
+                    "Dictionaries use curly braces {} with key:value pairs",
+                    "Keys must be unique and immutable (strings, numbers, tuples)",
+                    "Values can be any data type (even other dictionaries!)",
+                    "Access values with dict[key] or dict.get(key, default)",
+                    ".get() is safer - returns None or default if key missing",
+                    "Fast lookups - finding a value by key is very quick",
+                    "Perfect for: user profiles, settings, counting items, etc.",
+                    "Dictionary comprehension creates dicts in one line"
+                ],
+                quiz: {
+                    question: "How do you safely get a value from a dictionary if the key might not exist?",
+                    options: [
+                        "dict.get(key, default)",
+                        "dict[key]",
+                        "dict->key",
+                        "dict.find(key)"
+                    ],
+                    correct: 0
+                }
+            },
+            linkedlist: {
+                title: "🔗 Linked Lists - Dynamic Data Structure",
+                explanation: "Unlike arrays, Linked Lists don't store elements in contiguous memory. Each element (node) contains data and a reference (pointer) to the next node. Great for insertions/deletions but slower for accessing specific positions. Foundation for many advanced data structures!",
+                code: `// Node class - building block of linked list
+class Node {
+    constructor(data) {
+        this.data = data;      // The actual value
+        this.next = null;      // Pointer to next node
+    }
+}
+
+// LinkedList class
+class LinkedList {
+    constructor() {
+        this.head = null;      // First node
+        this.size = 0;         // Track length
+    }
+    
+    // Add node at the end - O(n)
+    append(data) {
+        const newNode = new Node(data);
+        
+        if (!this.head) {
+            this.head = newNode;
+        } else {
+            let current = this.head;
+            while (current.next) {
+                current = current.next;
+            }
+            current.next = newNode;
+        }
+        this.size++;
+    }
+    
+    // Add node at the beginning - O(1)
+    prepend(data) {
+        const newNode = new Node(data);
+        newNode.next = this.head;
+        this.head = newNode;
+        this.size++;
+    }
+    
+    // Insert at specific position - O(n)
+    insertAt(data, index) {
+        if (index < 0 || index > this.size) return false;
+        
+        if (index === 0) {
+            this.prepend(data);
+            return true;
+        }
+        
+        const newNode = new Node(data);
+        let current = this.head;
+        let previous;
+        let count = 0;
+        
+        while (count < index) {
+            previous = current;
+            current = current.next;
+            count++;
+        }
+        
+        newNode.next = current;
+        previous.next = newNode;
+        this.size++;
+        return true;
+    }
+    
+    // Delete node with specific value - O(n)
+    delete(data) {
+        if (!this.head) return false;
+        
+        if (this.head.data === data) {
+            this.head = this.head.next;
+            this.size--;
+            return true;
+        }
+        
+        let current = this.head;
+        while (current.next) {
+            if (current.next.data === data) {
+                current.next = current.next.next;
+                this.size--;
+                return true;
+            }
+            current = current.next;
+        }
+        return false;
+    }
+    
+    // Search for a value - O(n)
+    search(data) {
+        let current = this.head;
+        let index = 0;
+        
+        while (current) {
+            if (current.data === data) return index;
+            current = current.next;
+            index++;
+        }
+        return -1;
+    }
+    
+    // Print the list
+    print() {
+        let current = this.head;
+        let result = "";
+        
+        while (current) {
+            result += current.data + " -> ";
+            current = current.next;
+        }
+        return result + "null";
+    }
+}
+
+// Usage Example
+const list = new LinkedList();
+list.append(10);        // 10 -> null
+list.append(20);        // 10 -> 20 -> null
+list.prepend(5);        // 5 -> 10 -> 20 -> null
+list.insertAt(15, 2);   // 5 -> 10 -> 15 -> 20 -> null
+console.log(list.print());
+
+list.delete(10);        // 5 -> 15 -> 20 -> null
+console.log(list.search(15));  // 1`,
+                keyPoints: [
+                    "Each node has data and a pointer to the next node",
+                    "Head: first node in the list",
+                    "Last node points to null (end of list)",
+                    "Insertions/deletions at beginning are O(1) - very fast!",
+                    "Access by index is O(n) - must traverse from head",
+                    "No random access like arrays - must walk through nodes",
+                    "Dynamic size - grows and shrinks easily",
+                    "Types: Singly linked (one direction), Doubly linked (both directions), Circular"
+                ],
+                quiz: {
+                    question: "What is the time complexity of inserting at the beginning of a linked list?",
+                    options: [
+                        "O(1) - Constant time",
+                        "O(n) - Linear time",
+                        "O(log n) - Logarithmic",
+                        "O(n²) - Quadratic"
+                    ],
+                    correct: 0
+                }
+            },
+            stackqueue: {
+                title: "📚 Stacks & Queues - LIFO and FIFO Structures",
+                explanation: "Stacks follow Last-In-First-Out (LIFO) like a stack of plates - add and remove from top only! Queues follow First-In-First-Out (FIFO) like a line of people - add at back, remove from front. Both are fundamental data structures used everywhere in computer science!",
+                code: `// ========== STACK ==========
+// LIFO: Last In, First Out
+// Like a stack of plates!
+
+class Stack {
+    constructor() {
+        this.items = [];
+    }
+    
+    // Add item to top - O(1)
+    push(element) {
+        this.items.push(element);
+    }
+    
+    // Remove and return top item - O(1)
+    pop() {
+        if (this.isEmpty()) return null;
+        return this.items.pop();
+    }
+    
+    // View top item without removing - O(1)
+    peek() {
+        if (this.isEmpty()) return null;
+        return this.items[this.items.length - 1];
+    }
+    
+    // Check if empty
+    isEmpty() {
+        return this.items.length === 0;
+    }
+    
+    // Get size
+    size() {
+        return this.items.length;
+    }
+    
+    // Clear all items
+    clear() {
+        this.items = [];
+    }
+}
+
+// Stack Usage
+const stack = new Stack();
+stack.push(1);
+stack.push(2);
+stack.push(3);
+console.log(stack.pop());   // 3 (last in, first out)
+console.log(stack.peek());  // 2 (view top)
+
+// ========== QUEUE ==========
+// FIFO: First In, First Out
+// Like a line at a store!
+
+class Queue {
+    constructor() {
+        this.items = [];
+    }
+    
+    // Add item to back - O(1)
+    enqueue(element) {
+        this.items.push(element);
+    }
+    
+    // Remove and return front item - O(n)
+    dequeue() {
+        if (this.isEmpty()) return null;
+        return this.items.shift();
+    }
+    
+    // View front item without removing - O(1)
+    front() {
+        if (this.isEmpty()) return null;
+        return this.items[0];
+    }
+    
+    // Check if empty
+    isEmpty() {
+        return this.items.length === 0;
+    }
+    
+    // Get size
+    size() {
+        return this.items.length;
+    }
+}
+
+// Queue Usage
+const queue = new Queue();
+queue.enqueue("Alice");
+queue.enqueue("Bob");
+queue.enqueue("Carol");
+console.log(queue.dequeue());  // "Alice" (first in, first out)
+console.log(queue.front());    // "Bob" (next in line)
+
+// ===== REAL-WORLD APPLICATIONS =====
+
+// Stack: Undo/Redo functionality
+const undoStack = new Stack();
+function performAction(action) {
+    undoStack.push(action);
+}
+function undo() {
+    const lastAction = undoStack.pop();
+    console.log("Undoing:", lastAction);
+}
+
+// Queue: Task processing
+const taskQueue = new Queue();
+function addTask(task) {
+    taskQueue.enqueue(task);
+}
+function processNextTask() {
+    const task = taskQueue.dequeue();
+    console.log("Processing:", task);
+}`,
+                keyPoints: [
+                    "Stack: LIFO (Last In, First Out) - like a stack of plates",
+                    "Queue: FIFO (First In, First Out) - like a line of people",
+                    "Stack operations: push (add), pop (remove), peek (view top)",
+                    "Queue operations: enqueue (add to back), dequeue (remove from front)",
+                    "Both have O(1) additions, Stack has O(1) removal, basic Queue has O(n) removal",
+                    "Stack uses: function calls, undo/redo, browser history, expression evaluation",
+                    "Queue uses: task scheduling, printer jobs, breadth-first search, handling requests",
+                    "Advanced: Deque (double-ended queue) allows operations at both ends"
+                ],
+                quiz: {
+                    question: "Which data structure would you use for implementing an 'Undo' feature?",
+                    options: [
+                        "Stack (LIFO)",
+                        "Queue (FIFO)",
+                        "Array",
+                        "Object"
+                    ],
+                    correct: 0
+                }
+            },
+            trees: {
+                title: "🌳 Trees - Hierarchical Data Structures",
+                explanation: "Trees are hierarchical data structures with a root node and children nodes, forming a parent-child relationship. No cycles allowed! Perfect for representing hierarchical data like file systems, organization charts, decision trees, and more. Binary trees (max 2 children) are most common!",
+                code: `// Node class for Binary Tree
+class TreeNode {
+    constructor(value) {
+        this.value = value;
+        this.left = null;      // Left child
+        this.right = null;     // Right child
+    }
+}
+
+// Binary Tree class
+class BinaryTree {
+    constructor() {
+        this.root = null;
+    }
+    
+    // Insert value (for Binary Search Tree)
+    insert(value) {
+        const newNode = new TreeNode(value);
+        
+        if (!this.root) {
+            this.root = newNode;
+            return;
+        }
+        
+        this.insertNode(this.root, newNode);
+    }
+    
+    insertNode(node, newNode) {
+        if (newNode.value < node.value) {
+            // Go left
+            if (!node.left) {
+                node.left = newNode;
+            } else {
+                this.insertNode(node.left, newNode);
+            }
+        } else {
+            // Go right
+            if (!node.right) {
+                node.right = newNode;
+            } else {
+                this.insertNode(node.right, newNode);
+            }
+        }
+    }
+    
+    // TREE TRAVERSALS - Different ways to visit all nodes
+    
+    // 1. In-Order (Left, Root, Right) - gives sorted order for BST
+    inOrder(node = this.root, result = []) {
+        if (node) {
+            this.inOrder(node.left, result);
+            result.push(node.value);
+            this.inOrder(node.right, result);
+        }
+        return result;
+    }
+    
+    // 2. Pre-Order (Root, Left, Right) - good for copying tree
+    preOrder(node = this.root, result = []) {
+        if (node) {
+            result.push(node.value);
+            this.preOrder(node.left, result);
+            this.preOrder(node.right, result);
+        }
+        return result;
+    }
+    
+    // 3. Post-Order (Left, Right, Root) - good for deleting tree
+    postOrder(node = this.root, result = []) {
+        if (node) {
+            this.postOrder(node.left, result);
+            this.postOrder(node.right, result);
+            result.push(node.value);
+        }
+        return result;
+    }
+    
+    // Search for a value - O(log n) for balanced BST
+    search(value, node = this.root) {
+        if (!node) return false;
+        
+        if (value === node.value) return true;
+        if (value < node.value) return this.search(value, node.left);
+        return this.search(value, node.right);
+    }
+    
+    // Find minimum value (leftmost node)
+    findMin(node = this.root) {
+        if (!node) return null;
+        while (node.left) {
+            node = node.left;
+        }
+        return node.value;
+    }
+    
+    // Find maximum value (rightmost node)
+    findMax(node = this.root) {
+        if (!node) return null;
+        while (node.right) {
+            node = node.right;
+        }
+        return node.value;
+    }
+    
+    // Get height of tree
+    getHeight(node = this.root) {
+        if (!node) return -1;
+        const leftHeight = this.getHeight(node.left);
+        const rightHeight = this.getHeight(node.right);
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+}
+
+// Usage Example
+const tree = new BinaryTree();
+tree.insert(50);
+tree.insert(30);
+tree.insert(70);
+tree.insert(20);
+tree.insert(40);
+tree.insert(60);
+tree.insert(80);
+
+/*
+        50
+       /  \\
+      30   70
+     / \\  / \\
+    20 40 60 80
+*/
+
+console.log(tree.inOrder());     // [20,30,40,50,60,70,80] - sorted!
+console.log(tree.preOrder());    // [50,30,20,40,70,60,80]
+console.log(tree.postOrder());   // [20,40,30,60,80,70,50]
+console.log(tree.search(40));    // true
+console.log(tree.findMin());     // 20
+console.log(tree.getHeight());   // 2`,
+                keyPoints: [
+                    "Tree has root node at top, leaf nodes at bottom (no children)",
+                    "Binary Tree: each node has max 2 children (left & right)",
+                    "Binary Search Tree (BST): left children < parent < right children",
+                    "In-Order traversal of BST gives sorted values!",
+                    "Tree height: longest path from root to leaf",
+                    "Balanced tree: height is O(log n) - very efficient!",
+                    "Uses: file systems, DOM, databases, decision trees, autocomplete",
+                    "Operations on balanced BST: search/insert/delete are O(log n)"
+                ],
+                quiz: {
+                    question: "In a Binary Search Tree, where are values smaller than the root?",
+                    options: [
+                        "Left subtree",
+                        "Right subtree",
+                        "Both sides",
+                        "Above the root"
+                    ],
+                    correct: 0
+                }
+            },
+            sorting: {
+                title: "⬆️ Sorting Algorithms - Arranging Data in Order",
+                explanation: "Sorting is fundamental in computer science! Arranging data in order makes searching faster and helps solve many problems. Different algorithms have different trade-offs. Let's explore the most important ones!",
+                code: `// 1. BUBBLE SORT - Simple but slow
+// Time: O(n²), Space: O(1)
+// Repeatedly swaps adjacent elements if they're in wrong order
+
+function bubbleSort(arr) {
+    const n = arr.length;
+    
+    for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                // Swap
+                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+            }
+        }
+    }
+    return arr;
+}
+
+// 2. SELECTION SORT - Find minimum, move to front
+// Time: O(n²), Space: O(1)
+
+function selectionSort(arr) {
+    const n = arr.length;
+    
+    for (let i = 0; i < n; i++) {
+        let minIndex = i;
+        
+        // Find minimum in remaining array
+        for (let j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        
+        // Swap minimum to current position
+        [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+    }
+    return arr;
+}
+
+// 3. INSERTION SORT - Build sorted array one item at a time
+// Time: O(n²), Space: O(1)
+// Efficient for small arrays or nearly sorted data
+
+function insertionSort(arr) {
+    const n = arr.length;
+    
+    for (let i = 1; i < n; i++) {
+        let key = arr[i];
+        let j = i - 1;
+        
+        // Move elements greater than key one position ahead
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+    return arr;
+}
+
+// 4. MERGE SORT - Divide and Conquer (BEST FOR MOST CASES!)
+// Time: O(n log n), Space: O(n)
+// Stable, predictable, great for large datasets
+
+function mergeSort(arr) {
+    if (arr.length <= 1) return arr;
+    
+    const mid = Math.floor(arr.length / 2);
+    const left = mergeSort(arr.slice(0, mid));
+    const right = mergeSort(arr.slice(mid));
+    
+    return merge(left, right);
+}
+
+function merge(left, right) {
+    const result = [];
+    let i = 0, j = 0;
+    
+    while (i < left.length && j < right.length) {
+        if (left[i] < right[j]) {
+            result.push(left[i++]);
+        } else {
+            result.push(right[j++]);
+        }
+    }
+    
+    return result.concat(left.slice(i)).concat(right.slice(j));
+}
+
+// 5. QUICK SORT - Also Divide and Conquer
+// Time: O(n log n) average, O(n²) worst, Space: O(log n)
+// Usually fastest in practice!
+
+function quickSort(arr) {
+    if (arr.length <= 1) return arr;
+    
+    const pivot = arr[0];
+    const left = [];
+    const right = [];
+    
+    for (let i = 1; i < arr.length; i++) {
+        if (arr[i] < pivot) {
+            left.push(arr[i]);
+        } else {
+            right.push(arr[i]);
+        }
+    }
+    
+    return [...quickSort(left), pivot, ...quickSort(right)];
+}
+
+// Testing
+const data = [64, 34, 25, 12, 22, 11, 90];
+console.log(bubbleSort([...data]));    // [11, 12, 22, 25, 34, 64, 90]
+console.log(mergeSort([...data]));     // [11, 12, 22, 25, 34, 64, 90]
+console.log(quickSort([...data]));     // [11, 12, 22, 25, 34, 64, 90]
+
+// Algorithm Comparison:
+// Bubble, Selection, Insertion: O(n²) - slow for large data
+// Merge Sort: O(n log n) - consistent, stable, good for all cases
+// Quick Sort: O(n log n) average - usually fastest in practice
+// JavaScript's built-in sort() uses QuickSort/MergeSort hybrid!`,
+                keyPoints: [
+                    "O(n²) sorts: Bubble, Selection, Insertion - simple but slow for big data",
+                    "O(n log n) sorts: Merge, Quick - efficient for large datasets",
+                    "Merge Sort: always O(n log n), stable, predictable, needs extra space",
+                    "Quick Sort: usually fastest, O(n log n) average, in-place sorting",
+                    "Insertion Sort: great for small or nearly sorted arrays",
+                    "Stable sort: maintains relative order of equal elements",
+                    "In-place sort: uses O(1) extra space",
+                    "Real use: JavaScript's .sort() uses TimSort (Merge+Insertion hybrid)"
+                ],
+                quiz: {
+                    question: "Which sorting algorithm has O(n log n) time complexity in all cases?",
+                    options: [
+                        "Merge Sort",
+                        "Bubble Sort",
+                        "Quick Sort",
+                        "Selection Sort"
+                    ],
+                    correct: 0
+                }
+            },
+            recursion: {
+                title: "🔄 Recursion - Function Calling Itself",
+                explanation: "Recursion is when a function calls itself! It's like looking at a mirror reflecting another mirror - infinite reflections! Very powerful for problems that can be broken into smaller similar problems. Common in tree traversals, sorting, and mathematical problems.",
+                code: `// 1. FACTORIAL - Classic recursion example
+function factorial(n) {
+    // Base case: stop recursion
+    if (n === 0 || n === 1) {
+        return 1;
+    }
+    // Recursive case: function calls itself
+    return n * factorial(n - 1);
+}
+
+console.log(factorial(5));  // 5 * 4 * 3 * 2 * 1 = 120
+
+// 2. FIBONACCI - Each number is sum of previous two
+function fibonacci(n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(6));  // 0,1,1,2,3,5,8 → 8
+
+// 3. SUM OF ARRAY
+function sumArray(arr) {
+    if (arr.length === 0) return 0;
+    return arr[0] + sumArray(arr.slice(1));
+}
+
+console.log(sumArray([1, 2, 3, 4]));  // 10
+
+// 4. REVERSE STRING
+function reverseString(str) {
+    if (str === "") return "";
+    return reverseString(str.substr(1)) + str[0];
+}
+
+console.log(reverseString("hello"));  // "olleh"
+
+// 5. POWER CALCULATION
+function power(base, exponent) {
+    if (exponent === 0) return 1;
+    return base * power(base, exponent - 1);
+}
+
+console.log(power(2, 4));  // 2⁴ = 16
+
+// Call stack visualization for factorial(3):
+// factorial(3) calls factorial(2)
+//   factorial(2) calls factorial(1)
+//     factorial(1) returns 1
+//   factorial(2) returns 2 * 1 = 2
+// factorial(3) returns 3 * 2 = 6`,
+                keyPoints: [
+                    "Recursion = function calling itself with different input",
+                    "MUST have a BASE CASE to stop (or infinite loop!)",
+                    "Each recursive call adds to the call stack",
+                    "Base case: simplest version of the problem",
+                    "Recursive case: breaks problem into smaller piece + recursive call",
+                    "Can be replaced with loops but sometimes recursion is clearer",
+                    "Used in: tree/graph traversal, divide-and-conquer, backtracking",
+                    "Watch out for stack overflow with deep recursion"
+                ],
+                quiz: {
+                    question: "What happens if you forget the base case in recursion?",
+                    options: [
+                        "Infinite recursion (stack overflow)",
+                        "The function runs once",
+                        "It automatically stops",
+                        "Nothing, it's optional"
+                    ],
+                    correct: 0
+                }
+            }
+        };
+
+        let userProgress = {
+            topicsCompleted: 0,
+            questionsCorrect: 0,
+            totalScore: 0,
+            completedTopics: []
+        };
+
+        function loadTopic(topicKey) {
+            const topic = programmingTopics[topicKey];
+            if (!topic) return;
+
+            // Update active button
+            document.querySelectorAll('.topic-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const content = `
+                <div class="lesson-section">
+                    <h2 style="color: #667eea;">${topic.title}</h2>
+                    <p style="font-size: 1.1rem; line-height: 1.6;">${topic.explanation}</p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>💡 Code Example:</h3>
+                    <div class="code-example"><pre><code>${topic.code}</code></pre></div>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>📝 Key Points:</h3>
+                    <ul style="line-height: 2;">
+                        ${topic.keyPoints.map(point => `<li>${point}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="quiz-question">
+                    <h3 style="color: #764ba2;">🎯 Test Your Knowledge:</h3>
+                    <p style="font-weight: 600; margin: 15px 0;">${topic.quiz.question}</p>
+                    <div class="quiz-options" id="quizOptions">
+                        ${topic.quiz.options.map((option, index) =>
+                `<div class="quiz-option" onclick="checkAnswer(${index}, ${topic.quiz.correct}, '${topicKey}')">${option}</div>`
+            ).join('')}
+                    </div>
+                    <div id="feedback"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn-action" onclick="loadNextTopic('${topicKey}')">Next Topic →</button>
+                </div>
+            `;
+
+            document.getElementById('lessonContent').innerHTML = content;
+        }
+
+        function checkAnswer(selected, correct, topicKey) {
+            const topic = programmingTopics[topicKey];
+            const options = document.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById('feedback');
+            const selectedText = topic.quiz.options[selected];
+
+            options.forEach((opt, index) => {
+                opt.style.pointerEvents = 'none';
+                if (index === correct) {
+                    opt.classList.add('correct');
+                } else if (index === selected && selected !== correct) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            if (selected === correct) {
+                feedback.innerHTML = '<div class="feedback success">✅ Correct! Great job!</div>';
+                userProgress.questionsCorrect++;
+                userProgress.totalScore += 10;
+
+                if (!userProgress.completedTopics.includes(topicKey)) {
+                    userProgress.completedTopics.push(topicKey);
+                    userProgress.topicsCompleted++;
+                }
+
+                // Submit detailed progress to backend
+                if (window.ACEBackend && window.ACEBackend.submitDetailedProgress) {
+                    window.ACEBackend.submitDetailedProgress(
+                        'programming',
+                        topic.quiz.question,
+                        selectedText,
+                        true,
+                        10
+                    );
+                }
+
+                playSound('correct');
+            } else {
+                feedback.innerHTML = '<div class="feedback error">❌ Not quite. Try reviewing the lesson!</div>';
+
+                // Submit detailed progress to backend for incorrect answer
+                if (window.ACEBackend && window.ACEBackend.submitDetailedProgress) {
+                    window.ACEBackend.submitDetailedProgress(
+                        'programming',
+                        topic.quiz.question,
+                        selectedText,
+                        false,
+                        0
+                    );
+                }
+
+                playSound('incorrect');
+            }
+
+            updateStats();
+        }
+
+        function loadNextTopic(currentKey) {
+            const topics = Object.keys(programmingTopics);
+            const currentIndex = topics.indexOf(currentKey);
+            const nextIndex = (currentIndex + 1) % topics.length;
+            const nextTopic = topics[nextIndex];
+
+            document.querySelectorAll('.topic-btn')[nextIndex].click();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateStats() {
+            document.getElementById('topicsCompleted').textContent = userProgress.topicsCompleted;
+            document.getElementById('questionsCorrect').textContent = userProgress.questionsCorrect;
+            document.getElementById('totalScore').textContent = userProgress.totalScore;
+
+            const totalTopics = Object.keys(programmingTopics).length;
+            const progress = (userProgress.topicsCompleted / totalTopics) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // ========== OPTIMIZED INITIALIZATION ==========
+
+        // Hide loader and show content when ready
+        function initializeApp() {
+            updateStats();
+
+            // Hide loader with fade out
+            const loader = document.getElementById('loader');
+            const mainContent = document.getElementById('mainContent');
+
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 0.3s ease';
+
+            setTimeout(() => {
+                loader.style.display = 'none';
+                mainContent.style.display = 'block';
+                mainContent.style.opacity = '0';
+
+                // Fade in main content
+                setTimeout(() => {
+                    mainContent.style.transition = 'opacity 0.5s ease';
+                    mainContent.style.opacity = '1';
+                }, 50);
+            }, 300);
+        }
+
+        // Wait for DOM and all resources to load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+    </script>
+</body>
+
+</html>

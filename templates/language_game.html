@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Language Learning - ACE Learning Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/games.css') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Baloo+Bhai+2:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        /* 🎮 GAMIFIED LANGUAGE LEARNING STYLES */
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .language-hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .language-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: heroGlow 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes heroGlow {
+            0% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 0.8;
+            }
+        }
+
+        .language-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="lang-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><text x="10" y="15" font-size="8" fill="rgba(255,255,255,0.1)" text-anchor="middle">A</text></pattern></defs><rect width="100" height="100" fill="url(%23lang-pattern)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .language-title {
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: langTitleFloat 3s ease-in-out infinite;
+        }
+
+        .language-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .category-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+            padding: 0 20px;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .category-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .category-card h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .category-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .category-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .category-feature {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .start-category-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            margin-top: 15px;
+        }
+
+        .start-category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .back-to-main {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-main:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        @keyframes langTitleFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .floating-letters {
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-letters:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-letters:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-letters:nth-child(3) {
+            bottom: 30%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        .stats-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stats-preview h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .achievements-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .achievements-preview h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+
+        .achievement-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            color: #ffd700;
+        }
+
+        .achievement-info h4 {
+            color: white;
+            margin: 0;
+            text-align: left;
+        }
+
+        .achievement-info p {
+            color: rgba(255, 255, 255, 0.7);
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .quick-test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .quick-test-section h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+
+        .test-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .test-btn {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .test-note {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        /* Game Interface Styles */
+        .language-game-modal {
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .language-game-container {
+            padding: 20px;
+            color: #333;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .game-mode-info h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .game-mode-info p {
+            margin: 0;
+            opacity: 0.9;
+            color: #2c3e50;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+            min-width: 80px;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .question-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #4facfe;
+        }
+
+        .difficulty-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-badge.easy {
+            background: #4caf50;
+            color: white;
+        }
+
+        .difficulty-badge.medium {
+            background: #ff9800;
+            color: white;
+        }
+
+        .difficulty-badge.hard {
+            background: #f44336;
+            color: white;
+        }
+
+        .question {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: white;
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .option-btn:hover {
+            border-color: #4facfe;
+            background: #4facfe;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .option-btn.correct {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .option-btn.incorrect {
+            background: #f44336;
+            border-color: #f44336;
+            color: white;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hint-btn {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .hint-btn:hover {
+            background: #ffb300;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .skip-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .skip-btn:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 20px;
+        }
+
+        .feedback.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .feedback.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .feedback.hint {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .feedback.warning {
+            background: #ffeaa7;
+            color: #856404;
+            border: 1px solid #fdcb6e;
+        }
+
+        .feedback.achievement {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            border: 1px solid #ffd700;
+            animation: achievementGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes achievementGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        .game-settings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-group label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .setting-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .setting-group select:focus {
+            border-color: #4facfe;
+        }
+
+        .game-end {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .game-end h2 {
+            color: #4facfe;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .final-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .final-stats .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .final-stats .stat-label {
+            display: block;
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .final-stats .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4facfe;
+        }
+
+        .game-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .game-actions .control-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .game-stats {
+                justify-content: center;
+            }
+
+            .question {
+                font-size: 1.5rem;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+            .game-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .control-btn {
+                width: 100%;
+                max-width: 200px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/" class="back-to-main">← Back to Main</a>
+
+    <div class="language-hero">
+        <div class="floating-letters">A</div>
+        <div class="floating-letters">B</div>
+        <div class="floating-letters">C</div>
+
+        <h1 class="language-title">📚 Language Learning</h1>
+        <p class="language-subtitle">Master vocabulary and linguistic skills through adaptive, interactive exercises</p>
+    </div>
+
+    <div class="category-modes">
+        <div class="category-card" onclick="startLanguageGame('synonyms')">
+            <span class="category-icon">🔄</span>
+            <h3>Synonyms</h3>
+            <p>Find words with similar meanings and expand your vocabulary</p>
+            <div class="category-features">
+                <span class="category-feature">Similar Words</span>
+                <span class="category-feature">Context Clues</span>
+                <span class="category-feature">Smart Hints</span>
+            </div>
+            <button class="start-category-btn">Start Synonyms</button>
+        </div>
+
+        <div class="category-card" onclick="startLanguageGame('antonyms')">
+            <span class="category-icon">⚡</span>
+            <h3>Antonyms</h3>
+            <p>Discover words with opposite meanings to enhance your language skills</p>
+            <div class="category-features">
+                <span class="category-feature">Opposite Words</span>
+                <span class="category-feature">Contrast Learning</span>
+                <span class="category-feature">Adaptive</span>
+            </div>
+            <button class="start-category-btn">Start Antonyms</button>
+        </div>
+
+        <div class="category-card" onclick="startLanguageGame('definitions')">
+            <span class="category-icon">📖</span>
+            <h3>Definitions</h3>
+            <p>Learn word meanings through contextual understanding and examples</p>
+            <div class="category-features">
+                <span class="category-feature">Word Meanings</span>
+                <span class="category-feature">Context Examples</span>
+                <span class="category-feature">Explanations</span>
+            </div>
+            <button class="start-category-btn">Start Definitions</button>
+        </div>
+
+        <div class="category-card" onclick="startLanguageGame('word-pairs')">
+            <span class="category-icon">🔗</span>
+            <h3>Word Pairs</h3>
+            <p>Complete common word pairs and idioms to master language patterns</p>
+            <div class="category-features">
+                <span class="category-feature">Idioms</span>
+                <span class="category-feature">Common Pairs</span>
+                <span class="category-feature">Patterns</span>
+            </div>
+            <button class="start-category-btn">Start Word Pairs</button>
+        </div>
+    </div>
+
+    <div class="stats-preview">
+        <h3>📊 Your Language Statistics</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">92%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">1.8s</div>
+                <div class="stat-label">Avg Time</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">234</div>
+                <div class="stat-label">Words Learned</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Combo</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="achievements-preview">
+        <h3>🏆 Recent Achievements</h3>
+        <div class="achievement-item">
+            <div class="achievement-icon">📚</div>
+            <div class="achievement-info">
+                <h4>Vocabulary Master</h4>
+                <p>Learned 100 new words with 90% accuracy</p>
+            </div>
+        </div>
+        <div class="achievement-item">
+            <div class="achievement-icon">🔥</div>
+            <div class="achievement-info">
+                <h4>Combo Champion</h4>
+                <p>Maintained a 10-question combo streak</p>
+            </div>
+        </div>
+        <div class="achievement-item">
+            <div class="achievement-icon">⚡</div>
+            <div class="achievement-info">
+                <h4>Speed Reader</h4>
+                <p>Answered 5 questions in under 8 seconds</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Test Section -->
+    <div class="quick-test-section">
+        <h3>🧪 Quick Test - Try All Categories</h3>
+        <div class="test-buttons">
+            <button class="test-btn" onclick="testGameMode('synonyms')">Test Synonyms</button>
+            <button class="test-btn" onclick="testGameMode('antonyms')">Test Antonyms</button>
+            <button class="test-btn" onclick="testGameMode('definitions')">Test Definitions</button>
+            <button class="test-btn" onclick="testGameMode('word-pairs')">Test Word Pairs</button>
+        </div>
+        <p class="test-note">Click any button to test the language categories quickly!</p>
+    </div>
+
+    <!-- Game Modal -->
+    <div id="gameModal" class="modal">
+        <div class="modal-content language-game-modal">
+            <span class="close" onclick="closeGameModal()">&times;</span>
+            <div id="gameContent"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+    <script>
+        function startLanguageGame(category) {
+            console.log('Starting language game with category:', category);
+            try {
+                openGameModal();
+                loadLanguageGame(category);
+            } catch (error) {
+                console.error('Error starting language game:', error);
+                alert('Error starting game. Please try again.');
+            }
+        }
+
+        // Enhanced language game with multiple categories
+        function loadLanguageGame(category = 'synonyms') {
+            console.log('Loading language game for category:', category);
+
+            const gameContent = document.getElementById('gameContent');
+
+            if (!gameContent) {
+                console.error('Game content container not found');
+                return;
+            }
+
+            const gameHTML = `
+                <div class="language-game-container">
+                    <div class="game-header">
+                        <div class="game-mode-info">
+                            <h2>${getCategoryTitle(category)}</h2>
+                            <p>${getCategoryDescription(category)}</p>
+                        </div>
+                        <div class="game-stats">
+                            <div class="stat">
+                                <span class="stat-label">Score</span>
+                                <span class="stat-value" id="score">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Combo</span>
+                                <span class="stat-value" id="combo">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Level</span>
+                                <span class="stat-value" id="level">1</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Words</span>
+                                <span class="stat-value" id="wordsLearned">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <div class="question-header">
+                            <span class="question-number">Question <span id="questionNum">1</span></span>
+                            <span class="difficulty-badge" id="difficulty">Easy</span>
+                        </div>
+                        <div class="question" id="question">
+                            Find the synonym for "Happy"
+                        </div>
+                        <div class="options" id="options">
+                            <button class="option-btn" onclick="selectAnswer('Joyful')">Joyful</button>
+                            <button class="option-btn" onclick="selectAnswer('Sad')">Sad</button>
+                            <button class="option-btn" onclick="selectAnswer('Angry')">Angry</button>
+                            <button class="option-btn" onclick="selectAnswer('Tired')">Tired</button>
+                        </div>
+                    </div>
+                    
+                    <div class="game-controls">
+                        <button class="control-btn hint-btn" onclick="showHint()">
+                            <span class="btn-icon">💡</span>
+                            Hint (-10 pts)
+                        </button>
+                        <button class="control-btn submit-btn" onclick="submitAnswer()" id="submitBtn" disabled>
+                            <span class="btn-icon">✅</span>
+                            Submit Answer
+                        </button>
+                        <button class="control-btn skip-btn" onclick="skipQuestion()">
+                            <span class="btn-icon">⏭️</span>
+                            Skip (-5 pts)
+                        </button>
+                    </div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Progress: <span id="progressText">0/10</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback" id="feedback"></div>
+                    
+                    <div class="game-settings">
+                        <div class="setting-group">
+                            <label>Category:</label>
+                            <select id="categoryType" onchange="updateGameSettings()">
+                                <option value="synonyms" ${category === 'synonyms' ? 'selected' : ''}>Synonyms</option>
+                                <option value="antonyms" ${category === 'antonyms' ? 'selected' : ''}>Antonyms</option>
+                                <option value="definitions" ${category === 'definitions' ? 'selected' : ''}>Definitions</option>
+                                <option value="word-pairs" ${category === 'word-pairs' ? 'selected' : ''}>Word Pairs</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label>Difficulty:</label>
+                            <select id="difficultyLevel" onchange="updateGameSettings()">
+                                <option value="adaptive">Adaptive</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            gameContent.innerHTML = gameHTML;
+            console.log('Game HTML loaded, initializing...');
+            initializeLanguageGame(category);
+        }
+
+        function getCategoryTitle(category) {
+            const titles = {
+                'synonyms': '🔄 Synonyms Challenge',
+                'antonyms': '⚡ Antonyms Challenge',
+                'definitions': '📖 Definitions Challenge',
+                'word-pairs': '🔗 Word Pairs Challenge'
+            };
+            return titles[category] || 'Language Learning';
+        }
+
+        function getCategoryDescription(category) {
+            const descriptions = {
+                'synonyms': 'Find words with similar meanings',
+                'antonyms': 'Discover words with opposite meanings',
+                'definitions': 'Learn word meanings through context',
+                'word-pairs': 'Complete common word pairs and idioms'
+            };
+            return descriptions[category] || 'Practice your language skills';
+        }
+
+        function initializeLanguageGame(category) {
+            console.log('Initializing language game for category:', category);
+
+            // Initialize game state
+            window.languageGameState = {
+                category: category,
+                score: 0,
+                combo: 0,
+                level: 1,
+                questionNum: 1,
+                totalQuestions: 10,
+                currentQuestion: null,
+                selectedAnswer: null,
+                startTime: Date.now(),
+                difficulty: 'adaptive',
+                questionsAnswered: 0,
+                correctAnswers: 0,
+                wordsLearned: 0
+            };
+
+            // Generate first question
+            generateQuestion();
+
+            console.log('Language game initialized successfully');
+        }
+
+        function generateQuestion() {
+            const state = window.languageGameState;
+            if (!state) {
+                console.error('Game state not found');
+                return;
+            }
+
+            const difficulty = state.difficulty === 'adaptive' ? getAdaptiveDifficulty() : state.difficulty;
+
+            let question;
+            switch (state.category) {
+                case 'synonyms':
+                    question = generateSynonymQuestion(difficulty);
+                    break;
+                case 'antonyms':
+                    question = generateAntonymQuestion(difficulty);
+                    break;
+                case 'definitions':
+                    question = generateDefinitionQuestion(difficulty);
+                    break;
+                case 'word-pairs':
+                    question = generateWordPairQuestion(difficulty);
+                    break;
+                default:
+                    question = generateSynonymQuestion(difficulty);
+            }
+
+            state.currentQuestion = question;
+            displayQuestion(question);
+            updateDifficultyBadge(difficulty);
+        }
+
+        function getAdaptiveDifficulty() {
+            const state = window.languageGameState;
+            if (!state) return 'easy';
+
+            const accuracy = state.questionsAnswered > 0 ? state.correctAnswers / state.questionsAnswered : 0.5;
+
+            if (accuracy > 0.8 && state.combo > 5) return 'hard';
+            if (accuracy > 0.6 && state.combo > 3) return 'medium';
+            return 'easy';
+        }
+
+        // Comprehensive Language Question Bank
+        const languageQuestionBank = {
+            synonyms: {
+                easy: [
+                    { word: "Happy", correct: "Joyful", options: ["Joyful", "Sad", "Angry", "Tired"], hint: "Think of a word that means feeling good or pleased" },
+                    { word: "Big", correct: "Large", options: ["Large", "Small", "Tiny", "Little"], hint: "A word meaning great in size" },
+                    { word: "Fast", correct: "Quick", options: ["Quick", "Slow", "Lazy", "Calm"], hint: "Moving or acting with speed" },
+                    { word: "Smart", correct: "Intelligent", options: ["Intelligent", "Dumb", "Foolish", "Silly"], hint: "Having good mental ability" },
+                    { word: "Beautiful", correct: "Pretty", options: ["Pretty", "Ugly", "Plain", "Simple"], hint: "Pleasing to look at" },
+                    { word: "Sad", correct: "Unhappy", options: ["Unhappy", "Joyful", "Excited", "Cheerful"], hint: "Feeling sorrow or grief" },
+                    { word: "Small", correct: "Tiny", options: ["Tiny", "Huge", "Large", "Giant"], hint: "Not big in size" },
+                    { word: "Strong", correct: "Powerful", options: ["Powerful", "Weak", "Feeble", "Frail"], hint: "Having great force or strength" },
+                    { word: "Cold", correct: "Chilly", options: ["Chilly", "Hot", "Warm", "Boiling"], hint: "Low in temperature" },
+                    { word: "Loud", correct: "Noisy", options: ["Noisy", "Quiet", "Silent", "Peaceful"], hint: "Making a lot of sound" }
+                ],
+                medium: [
+                    { word: "Courageous", correct: "Brave", options: ["Brave", "Scared", "Afraid", "Timid"], hint: "Showing courage in the face of danger" },
+                    { word: "Enormous", correct: "Huge", options: ["Huge", "Tiny", "Small", "Little"], hint: "Extremely large in size" },
+                    { word: "Mysterious", correct: "Puzzling", options: ["Puzzling", "Clear", "Obvious", "Simple"], hint: "Difficult to understand or explain" },
+                    { word: "Generous", correct: "Kind", options: ["Kind", "Selfish", "Mean", "Cruel"], hint: "Willing to give or share" },
+                    { word: "Ancient", correct: "Old", options: ["Old", "New", "Modern", "Recent"], hint: "Very old or from long ago" },
+                    { word: "Furious", correct: "Angry", options: ["Angry", "Calm", "Happy", "Peaceful"], hint: "Extremely upset or mad" },
+                    { word: "Remarkable", correct: "Extraordinary", options: ["Extraordinary", "Ordinary", "Common", "Usual"], hint: "Worthy of attention or notice" },
+                    { word: "Honest", correct: "Truthful", options: ["Truthful", "Dishonest", "Lying", "Deceitful"], hint: "Speaking the truth" },
+                    { word: "Swift", correct: "Rapid", options: ["Rapid", "Slow", "Sluggish", "Gradual"], hint: "Moving very quickly" },
+                    { word: "Tranquil", correct: "Peaceful", options: ["Peaceful", "Chaotic", "Loud", "Violent"], hint: "Free from disturbance" }
+                ],
+                hard: [
+                    { word: "Magnificent", correct: "Splendid", options: ["Splendid", "Ordinary", "Common", "Regular"], hint: "Extremely beautiful or impressive" },
+                    { word: "Persistent", correct: "Determined", options: ["Determined", "Lazy", "Weak", "Soft"], hint: "Continuing firmly despite obstacles" },
+                    { word: "Eloquent", correct: "Articulate", options: ["Articulate", "Quiet", "Silent", "Mute"], hint: "Fluent and persuasive in speaking" },
+                    { word: "Vigilant", correct: "Watchful", options: ["Watchful", "Careless", "Negligent", "Inattentive"], hint: "Keeping careful watch for danger" },
+                    { word: "Resilient", correct: "Strong", options: ["Strong", "Weak", "Fragile", "Brittle"], hint: "Able to recover quickly from difficulties" },
+                    { word: "Benevolent", correct: "Charitable", options: ["Charitable", "Cruel", "Mean", "Harsh"], hint: "Well-meaning and kindly" },
+                    { word: "Meticulous", correct: "Careful", options: ["Careful", "Careless", "Sloppy", "Reckless"], hint: "Showing great attention to detail" },
+                    { word: "Vivacious", correct: "Lively", options: ["Lively", "Dull", "Boring", "Lifeless"], hint: "Attractively lively and animated" },
+                    { word: "Plausible", correct: "Believable", options: ["Believable", "Impossible", "Absurd", "Unlikely"], hint: "Seeming reasonable or probable" },
+                    { word: "Tenacious", correct: "Persistent", options: ["Persistent", "Yielding", "Weak", "Surrendering"], hint: "Not readily giving up or letting go" }
+                ]
+            },
+            grammar: {
+                easy: [
+                    { question: "Choose the correct form: She ___ to school every day.", correct: "goes", options: ["goes", "go", "going", "gone"], hint: "Third person singular present tense" },
+                    { question: "Which is correct? The cat is ___ the table.", correct: "on", options: ["on", "in", "at", "by"], hint: "Think about position on top of something" },
+                    { question: "Fill in: I ___ a book yesterday.", correct: "read", options: ["read", "reads", "reading", "will read"], hint: "Past tense of read" },
+                    { question: "Choose: ___ apples are on the table?", correct: "How many", options: ["How many", "How much", "How old", "How far"], hint: "Used for countable items" },
+                    { question: "Correct the sentence: He don't like pizza.", correct: "doesn't", options: ["doesn't", "don't", "didn't", "won't"], hint: "Third person singular negative" },
+                    { question: "Fill in: They ___ playing football now.", correct: "are", options: ["are", "is", "am", "be"], hint: "Plural subject present continuous" },
+                    { question: "Which is correct? I have ___ friends.", correct: "many", options: ["many", "much", "a lot", "few"], hint: "Used with countable nouns" },
+                    { question: "Choose: She is ___ than her sister.", correct: "taller", options: ["taller", "more tall", "tallest", "most tall"], hint: "Comparative form of tall" }
+                ],
+                medium: [
+                    { question: "Choose: If I ___ rich, I would travel the world.", correct: "were", options: ["were", "was", "am", "be"], hint: "Second conditional" },
+                    { question: "Fill in: The book ___ by millions of people.", correct: "was read", options: ["was read", "read", "is reading", "has read"], hint: "Passive voice past tense" },
+                    { question: "Correct: Neither of the boys ___ ready.", correct: "is", options: ["is", "are", "were", "been"], hint: "Neither takes singular verb" },
+                    { question: "Choose: I wish I ___ speak French fluently.", correct: "could", options: ["could", "can", "will", "would"], hint: "Expressing a wish about ability" },
+                    { question: "Fill in: She has been working here ___ 2015.", correct: "since", options: ["since", "for", "from", "at"], hint: "Used with a specific point in time" },
+                    { question: "Which is correct? He made me ___ my homework.", correct: "do", options: ["do", "to do", "doing", "done"], hint: "After 'make' use base form" },
+                    { question: "Choose: The meeting has been ___ until next week.", correct: "postponed", options: ["postponed", "delayed", "cancelled", "forwarded"], hint: "Rescheduled to a later time" },
+                    { question: "Fill in: By next year, I ___ here for 10 years.", correct: "will have worked", options: ["will have worked", "work", "am working", "worked"], hint: "Future perfect tense" }
+                ],
+                hard: [
+                    { question: "Choose: Had I known earlier, I ___ you.", correct: "would have helped", options: ["would have helped", "will help", "helped", "help"], hint: "Third conditional inverted" },
+                    { question: "Which is correct? Scarcely ___ left when it started raining.", correct: "had we", options: ["had we", "we had", "did we", "we did"], hint: "Inversion after scarcely" },
+                    { question: "Fill in: The evidence ___ that he is guilty.", correct: "suggests", options: ["suggests", "suggest", "is suggesting", "are suggesting"], hint: "Uncountable noun takes singular verb" },
+                    { question: "Choose: I would rather you ___ smoke here.", correct: "didn't", options: ["didn't", "don't", "won't", "haven't"], hint: "Would rather + past simple for preference" },
+                    { question: "Correct: No sooner ___ arrived than the phone rang.", correct: "had I", options: ["had I", "I had", "did I", "I did"], hint: "Inversion after no sooner" },
+                    { question: "Fill in: The number of students ___ increasing.", correct: "is", options: ["is", "are", "were", "been"], hint: "'The number of' takes singular verb" },
+                    { question: "Choose: It's high time we ___ action.", correct: "took", options: ["took", "take", "taken", "taking"], hint: "It's high time + past simple" },
+                    { question: "Which is correct? Not only ___ late, but he forgot his keys.", correct: "was he", options: ["was he", "he was", "is he", "he is"], hint: "Inversion after not only" }
+                ]
+            },
+            comprehension: {
+                easy: [
+                    { passage: "The sun rises in the east and sets in the west.", question: "Where does the sun rise?", correct: "East", options: ["East", "West", "North", "South"], hint: "Read the first part of the sentence" },
+                    { passage: "Dogs are loyal animals that make great pets.", question: "What quality of dogs is mentioned?", correct: "Loyal", options: ["Loyal", "Fast", "Loud", "Small"], hint: "Look for the describing word" },
+                    { passage: "Water boils at 100 degrees Celsius.", question: "At what temperature does water boil?", correct: "100", options: ["100", "50", "200", "0"], hint: "Find the number in the text" },
+                    { passage: "Birds have wings and can fly in the sky.", question: "What helps birds fly?", correct: "Wings", options: ["Wings", "Legs", "Tail", "Beak"], hint: "What body part is mentioned?" }
+                ],
+                medium: [
+                    { passage: "Exercise is important for maintaining good health. It strengthens muscles and improves cardiovascular function.", question: "What does exercise strengthen?", correct: "Muscles", options: ["Muscles", "Bones only", "Hair", "Teeth"], hint: "Read carefully what is mentioned" },
+                    { passage: "The library opens at 9 AM and closes at 6 PM on weekdays. On weekends, it operates from 10 AM to 4 PM.", question: "When does the library open on weekends?", correct: "10 AM", options: ["10 AM", "9 AM", "6 PM", "4 PM"], hint: "Look for weekend timing" },
+                    { passage: "Photosynthesis is the process by which plants make their own food using sunlight, water, and carbon dioxide.", question: "What do plants use to make food?", correct: "Sunlight, water, CO2", options: ["Sunlight, water, CO2", "Only water", "Only sunlight", "Soil only"], hint: "Find all three things mentioned" }
+                ],
+                hard: [
+                    { passage: "Despite facing numerous challenges, the team persevered and ultimately achieved their goal.", question: "What did the team do despite challenges?", correct: "Persevered", options: ["Persevered", "Quit", "Complained", "Stopped"], hint: "How did they respond to difficulties?" },
+                    { passage: "The novel explores themes of identity and belonging through the protagonist's journey across different cultures.", question: "What themes does the novel explore?", correct: "Identity and belonging", options: ["Identity and belonging", "Love and war", "Money and power", "Food and travel"], hint: "Two specific themes are mentioned" }
+                ]
+            },
+            spelling: {
+                easy: [
+                    { question: "Which word is spelled correctly?", correct: "because", options: ["because", "becuase", "becuse", "beacuse"], hint: "Common word meaning 'for the reason that'" },
+                    { question: "Choose the correct spelling:", correct: "friend", options: ["friend", "freind", "frend", "freend"], hint: "'I' before 'E' except after 'C'" },
+                    { question: "Which is correct?", correct: "together", options: ["together", "togeather", "togather", "toghether"], hint: "Means 'with each other'" },
+                    { question: "Correct spelling:", correct: "beautiful", options: ["beautiful", "beatiful", "beutiful", "beautyful"], hint: "Adjective describing something pleasing" },
+                    { question: "Which is right?", correct: "school", options: ["school", "scool", "schol", "skool"], hint: "Place of learning" }
+                ],
+                medium: [
+                    { question: "Choose the correct spelling:", correct: "necessary", options: ["necessary", "neccessary", "necesary", "neccesary"], hint: "One C, two S's" },
+                    { question: "Which is spelled correctly?", correct: "rhythm", options: ["rhythm", "rythm", "rhythem", "rhytm"], hint: "No vowels in the middle" },
+                    { question: "Correct spelling:", correct: "receive", options: ["receive", "recieve", "receve", "receeve"], hint: "'I' before 'E' except after 'C'" },
+                    { question: "Which is right?", correct: "beginning", options: ["beginning", "begining", "beggining", "beginng"], hint: "Double N in the middle" },
+                    { question: "Choose correct:", correct: "committee", options: ["committee", "commitee", "comittee", "committy"], hint: "Double M, double T, double E" }
+                ],
+                hard: [
+                    { question: "Choose the correct spelling:", correct: "entrepreneur", options: ["entrepreneur", "entrepeneur", "entreprenur", "enterprenuer"], hint: "French origin word" },
+                    { question: "Which is spelled correctly?", correct: "conscience", options: ["conscience", "consience", "concience", "conscince"], hint: "Inner sense of right and wrong" },
+                    { question: "Correct spelling:", correct: "maintenance", options: ["maintenance", "maintainance", "maintenence", "maintanance"], hint: "Keep something in good condition" },
+                    { question: "Which is right?", correct: "bureaucracy", options: ["bureaucracy", "bureocracy", "burocracy", "beurocracy"], hint: "System of government administration" },
+                    { question: "Choose correct:", correct: "accommodate", options: ["accommodate", "acommodate", "acomodate", "accommadate"], hint: "Double C, double M" }
+                ]
+            }
+        };
+
+        // Track used questions to prevent repetition
+        if (!window.usedLanguageQuestions) {
+            window.usedLanguageQuestions = {
+                synonyms: { easy: [], medium: [], hard: [] },
+                grammar: { easy: [], medium: [], hard: [] },
+                comprehension: { easy: [], medium: [], hard: [] },
+                spelling: { easy: [], medium: [], hard: [] }
+            };
+        }
+
+        function getUnusedLanguageQuestion(category, difficulty) {
+            const questions = languageQuestionBank[category][difficulty] || languageQuestionBank[category].easy;
+            const used = window.usedLanguageQuestions[category][difficulty];
+
+            // Reset if all questions have been used
+            if (used.length >= questions.length) {
+                window.usedLanguageQuestions[category][difficulty] = [];
+            }
+
+            // Find an unused question
+            const availableQuestions = questions.filter((_, index) => !used.includes(index));
+
+            if (availableQuestions.length === 0) {
+                window.usedLanguageQuestions[category][difficulty] = [];
+                return questions[Math.floor(Math.random() * questions.length)];
+            }
+
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            const selectedQuestion = availableQuestions[randomIndex];
+            const originalIndex = questions.indexOf(selectedQuestion);
+
+            used.push(originalIndex);
+
+            return { ...selectedQuestion };
+        }
+
+        function generateSynonymQuestion(difficulty) {
+            return getUnusedLanguageQuestion('synonyms', difficulty);
+        }
+
+        function generateAntonymQuestion(difficulty) {
+            return getUnusedLanguageQuestion('antonyms', difficulty);
+        }
+
+        // Add antonyms to the language question bank
+        languageQuestionBank.antonyms = {
+            easy: [
+                { word: "Hot", correct: "Cold", options: ["Cold", "Warm", "Boiling", "Steaming"], hint: "The opposite of hot temperature" },
+                { word: "Up", correct: "Down", options: ["Down", "High", "Above", "Over"], hint: "The opposite direction of up" },
+                { word: "Light", correct: "Dark", options: ["Dark", "Bright", "Clear", "Visible"], hint: "The absence of light" },
+                { word: "Happy", correct: "Sad", options: ["Sad", "Joyful", "Cheerful", "Glad"], hint: "The opposite of feeling happy" },
+                { word: "Big", correct: "Small", options: ["Small", "Large", "Huge", "Giant"], hint: "The opposite of big in size" },
+                { word: "Fast", correct: "Slow", options: ["Slow", "Quick", "Rapid", "Swift"], hint: "The opposite of fast" },
+                { word: "Good", correct: "Bad", options: ["Bad", "Nice", "Great", "Excellent"], hint: "The opposite of good" },
+                { word: "Strong", correct: "Weak", options: ["Weak", "Powerful", "Mighty", "Robust"], hint: "The opposite of strong" },
+                { word: "Young", correct: "Old", options: ["Old", "New", "Fresh", "Modern"], hint: "The opposite of young" },
+                { word: "Hard", correct: "Soft", options: ["Soft", "Firm", "Solid", "Tough"], hint: "The opposite of hard" }
+            ],
+            medium: [
+                { word: "Generous", correct: "Selfish", options: ["Selfish", "Kind", "Nice", "Friendly"], hint: "Thinking only of oneself" },
+                { word: "Honest", correct: "Dishonest", options: ["Dishonest", "Truthful", "Sincere", "Genuine"], hint: "Not telling the truth" },
+                { word: "Patient", correct: "Impatient", options: ["Impatient", "Calm", "Quiet", "Peaceful"], hint: "Unable to wait calmly" },
+                { word: "Brave", correct: "Cowardly", options: ["Cowardly", "Courageous", "Bold", "Fearless"], hint: "Lacking courage" },
+                { word: "Wise", correct: "Foolish", options: ["Foolish", "Smart", "Intelligent", "Clever"], hint: "Lacking good judgment" },
+                { word: "Increase", correct: "Decrease", options: ["Decrease", "Grow", "Rise", "Expand"], hint: "The opposite of increase" },
+                { word: "Accept", correct: "Reject", options: ["Reject", "Approve", "Welcome", "Embrace"], hint: "The opposite of accept" },
+                { word: "Arrive", correct: "Depart", options: ["Depart", "Come", "Reach", "Enter"], hint: "The opposite of arrive" },
+                { word: "Expand", correct: "Contract", options: ["Contract", "Grow", "Enlarge", "Extend"], hint: "The opposite of expand" },
+                { word: "Gather", correct: "Scatter", options: ["Scatter", "Collect", "Assemble", "Accumulate"], hint: "The opposite of gather" }
+            ],
+            hard: [
+                { word: "Optimistic", correct: "Pessimistic", options: ["Pessimistic", "Hopeful", "Cheerful", "Positive"], hint: "Tending to see the worst in things" },
+                { word: "Diligent", correct: "Lazy", options: ["Lazy", "Hardworking", "Active", "Energetic"], hint: "Unwilling to work or use energy" },
+                { word: "Authentic", correct: "Fake", options: ["Fake", "Real", "Genuine", "Original"], hint: "Not genuine or real" },
+                { word: "Eloquent", correct: "Inarticulate", options: ["Inarticulate", "Articulate", "Fluent", "Expressive"], hint: "Unable to express oneself clearly" },
+                { word: "Resilient", correct: "Fragile", options: ["Fragile", "Strong", "Tough", "Robust"], hint: "Easily broken or damaged" },
+                { word: "Abundant", correct: "Scarce", options: ["Scarce", "Plentiful", "Ample", "Copious"], hint: "In short supply" },
+                { word: "Ascend", correct: "Descend", options: ["Descend", "Rise", "Climb", "Soar"], hint: "To go downward" },
+                { word: "Conceal", correct: "Reveal", options: ["Reveal", "Hide", "Cover", "Mask"], hint: "To make known or visible" },
+                { word: "Condemn", correct: "Praise", options: ["Praise", "Criticize", "Blame", "Denounce"], hint: "To express approval" },
+                { word: "Flourish", correct: "Wither", options: ["Wither", "Prosper", "Thrive", "Bloom"], hint: "To become dry and shriveled" }
+            ]
+        };
+
+        // Initialize used questions for antonyms
+        if (!window.usedLanguageQuestions.antonyms) {
+            window.usedLanguageQuestions.antonyms = { easy: [], medium: [], hard: [] };
+        }
+
+        function generateDefinitionQuestion(difficulty) {
+            const questions = {
+                easy: [
+                    { definition: "What does 'Serene' mean?", correct: "Peaceful", options: ["Peaceful", "Loud", "Angry", "Happy"], hint: "Calm and tranquil" },
+                    { definition: "What does 'Vast' mean?", correct: "Huge", options: ["Huge", "Small", "Medium", "Tiny"], hint: "Very great in size or extent" },
+                    { definition: "What does 'Swift' mean?", correct: "Fast", options: ["Fast", "Slow", "Steady", "Careful"], hint: "Moving quickly" },
+                    { definition: "What does 'Bright' mean?", correct: "Shiny", options: ["Shiny", "Dark", "Dull", "Dim"], hint: "Giving out much light" },
+                    { definition: "What does 'Quiet' mean?", correct: "Silent", options: ["Silent", "Loud", "Noisy", "Busy"], hint: "Making little or no noise" }
+                ],
+                medium: [
+                    { definition: "What does 'Eloquent' mean?", correct: "Well-spoken", options: ["Well-spoken", "Quiet", "Loud", "Shy"], hint: "Fluent and persuasive in speaking" },
+                    { definition: "What does 'Persistent' mean?", correct: "Determined", options: ["Determined", "Lazy", "Weak", "Soft"], hint: "Continuing firmly despite obstacles" },
+                    { definition: "What does 'Authentic' mean?", correct: "Genuine", options: ["Genuine", "Fake", "Copy", "Imitation"], hint: "Of undisputed origin; genuine" },
+                    { definition: "What does 'Vigilant' mean?", correct: "Watchful", options: ["Watchful", "Careless", "Negligent", "Inattentive"], hint: "Keeping careful watch for danger" },
+                    { definition: "What does 'Resilient' mean?", correct: "Strong", options: ["Strong", "Weak", "Fragile", "Brittle"], hint: "Able to recover quickly from difficulties" }
+                ],
+                hard: [
+                    { definition: "What does 'Magnificent' mean?", correct: "Splendid", options: ["Splendid", "Ordinary", "Plain", "Simple"], hint: "Extremely beautiful or impressive" },
+                    { definition: "What does 'Diligent' mean?", correct: "Hardworking", options: ["Hardworking", "Lazy", "Slow", "Careless"], hint: "Having or showing care in one's work" },
+                    { definition: "What does 'Eloquent' mean?", correct: "Articulate", options: ["Articulate", "Quiet", "Mute", "Silent"], hint: "Fluent and persuasive in speaking" },
+                    { definition: "What does 'Vigilant' mean?", correct: "Alert", options: ["Alert", "Sleepy", "Tired", "Drowsy"], hint: "Keeping careful watch for danger" },
+                    { definition: "What does 'Resilient' mean?", correct: "Flexible", options: ["Flexible", "Rigid", "Stiff", "Inflexible"], hint: "Able to withstand or recover quickly" }
+                ]
+            };
+
+            const levelQuestions = questions[difficulty] || questions.easy;
+            return levelQuestions[Math.floor(Math.random() * levelQuestions.length)];
+        }
+
+        function generateWordPairQuestion(difficulty) {
+            const questions = {
+                easy: [
+                    { pair: "Complete the pair: 'Hot and...'", correct: "Cold", options: ["Cold", "Warm", "Boiling", "Steaming"], hint: "The opposite of hot" },
+                    { pair: "Complete the pair: 'Up and...'", correct: "Down", options: ["Down", "High", "Above", "Over"], hint: "The opposite direction" },
+                    { pair: "Complete the pair: 'Light and...'", correct: "Dark", options: ["Dark", "Bright", "Clear", "Visible"], hint: "The absence of light" },
+                    { pair: "Complete the pair: 'Day and...'", correct: "Night", options: ["Night", "Morning", "Evening", "Afternoon"], hint: "The time when it's dark" },
+                    { pair: "Complete the pair: 'Good and...'", correct: "Bad", options: ["Bad", "Nice", "Great", "Wonderful"], hint: "The opposite of good" }
+                ],
+                medium: [
+                    { pair: "Complete the pair: 'Give and...'", correct: "Take", options: ["Take", "Receive", "Accept", "Get"], hint: "To receive something" },
+                    { pair: "Complete the pair: 'Left and...'", correct: "Right", options: ["Right", "Correct", "Proper", "Good"], hint: "The opposite direction" },
+                    { pair: "Complete the pair: 'Win and...'", correct: "Lose", options: ["Lose", "Fail", "Miss", "Drop"], hint: "To not win" },
+                    { pair: "Complete the pair: 'Love and...'", correct: "Hate", options: ["Hate", "Like", "Adore", "Cherish"], hint: "Strong dislike" },
+                    { pair: "Complete the pair: 'True and...'", correct: "False", options: ["False", "Real", "Genuine", "Honest"], hint: "Not true" }
+                ],
+                hard: [
+                    { pair: "Complete the pair: 'Cause and...'", correct: "Effect", options: ["Effect", "Result", "Outcome", "Consequence"], hint: "The result of an action" },
+                    { pair: "Complete the pair: 'Question and...'", correct: "Answer", options: ["Answer", "Reply", "Response", "Solution"], hint: "A response to a question" },
+                    { pair: "Complete the pair: 'Problem and...'", correct: "Solution", options: ["Solution", "Answer", "Fix", "Cure"], hint: "The way to solve something" },
+                    { pair: "Complete the pair: 'Theory and...'", correct: "Practice", options: ["Practice", "Reality", "Fact", "Truth"], hint: "The application of knowledge" },
+                    { pair: "Complete the pair: 'Mind and...'", correct: "Body", options: ["Body", "Soul", "Spirit", "Heart"], hint: "The physical part of a person" }
+                ]
+            };
+
+            const levelQuestions = questions[difficulty] || questions.easy;
+            return levelQuestions[Math.floor(Math.random() * levelQuestions.length)];
+        }
+
+        function displayQuestion(question) {
+            const questionElement = document.getElementById('question');
+            const optionsContainer = document.getElementById('options');
+
+            if (questionElement && optionsContainer) {
+                // Display question text
+                if (question.word) {
+                    questionElement.textContent = `Find the ${window.languageGameState.category.slice(0, -1)} for "${question.word}"`;
+                } else if (question.definition) {
+                    questionElement.textContent = question.definition;
+                } else if (question.pair) {
+                    questionElement.textContent = question.pair;
+                }
+
+                // Clear previous selections
+                window.languageGameState.selectedAnswer = null;
+                document.getElementById('submitBtn').disabled = true;
+
+                // Display options
+                optionsContainer.innerHTML = '';
+                question.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.className = 'option-btn';
+                    button.textContent = option;
+                    button.onclick = () => selectAnswer(option);
+                    optionsContainer.appendChild(button);
+                });
+            } else {
+                console.error('Question display elements not found');
+            }
+        }
+
+        function updateDifficultyBadge(difficulty) {
+            const badge = document.getElementById('difficulty');
+            if (badge) {
+                badge.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+                badge.className = `difficulty-badge ${difficulty}`;
+            }
+        }
+
+        function selectAnswer(answer) {
+            const state = window.languageGameState;
+            if (!state) return;
+
+            // Remove previous selection
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            // Add selection to clicked button
+            event.target.classList.add('selected');
+            state.selectedAnswer = answer;
+
+            // Enable submit button
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function submitAnswer() {
+            const state = window.languageGameState;
+            if (!state || !state.selectedAnswer) {
+                showFeedback('Please select an answer first!', 'warning');
+                return;
+            }
+
+            const isCorrect = state.selectedAnswer === state.currentQuestion.correct;
+            state.questionsAnswered++;
+
+            // Show correct/incorrect options
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.textContent === state.currentQuestion.correct) {
+                    btn.classList.add('correct');
+                } else if (btn.textContent === state.selectedAnswer && !isCorrect) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            if (isCorrect) {
+                state.correctAnswers++;
+                state.combo++;
+                state.wordsLearned++;
+                const points = calculatePoints(state.currentQuestion.difficulty || 'easy', state.combo);
+                state.score += points;
+
+                showFeedback(`Correct! +${points} points (Combo: ${state.combo})`, 'success');
+                playSound('correct');
+
+                // Submit detailed progress to backend
+                let questionText = "";
+                if (state.currentQuestion.word) {
+                    questionText = `Find the ${state.category.slice(0, -1)} for "${state.currentQuestion.word}"`;
+                } else if (state.currentQuestion.definition) {
+                    questionText = state.currentQuestion.definition;
+                } else if (state.currentQuestion.pair) {
+                    questionText = state.currentQuestion.pair;
+                }
+
+                if (window.ACEBackend && window.ACEBackend.submitDetailedProgress) {
+                    window.ACEBackend.submitDetailedProgress(
+                        'language',
+                        questionText,
+                        state.selectedAnswer,
+                        true,
+                        points
+                    );
+                }
+
+                // Check for achievements
+                checkAchievements();
+            } else {
+                state.combo = 0;
+                showFeedback(`Wrong! The answer was "${state.currentQuestion.correct}"`, 'error');
+                playSound('incorrect');
+
+                // Submit detailed progress to backend for incorrect answer
+                let questionText = "";
+                if (state.currentQuestion.word) {
+                    questionText = `Find the ${state.category.slice(0, -1)} for "${state.currentQuestion.word}"`;
+                } else if (state.currentQuestion.definition) {
+                    questionText = state.currentQuestion.definition;
+                } else if (state.currentQuestion.pair) {
+                    questionText = state.currentQuestion.pair;
+                }
+
+                if (window.ACEBackend && window.ACEBackend.submitDetailedProgress) {
+                    window.ACEBackend.submitDetailedProgress(
+                        'language',
+                        questionText,
+                        state.selectedAnswer,
+                        false,
+                        0
+                    );
+                }
+            }
+
+            updateGameStats();
+
+            // Move to next question after delay
+            setTimeout(() => {
+                nextQuestion();
+            }, 2000);
+        }
+
+        function calculatePoints(difficulty, combo) {
+            let basePoints = 10;
+
+            // Difficulty multiplier
+            switch (difficulty) {
+                case 'easy': basePoints = 10; break;
+                case 'medium': basePoints = 20; break;
+                case 'hard': basePoints = 30; break;
+            }
+
+            // Combo bonus
+            const comboBonus = Math.floor(combo / 3) * 5;
+
+            return basePoints + comboBonus;
+        }
+
+        function showHint() {
+            const state = window.languageGameState;
+            if (!state || !state.currentQuestion) {
+                console.error('Game state or current question not found');
+                return;
+            }
+
+            const question = state.currentQuestion;
+
+            // Deduct points for using hint
+            state.score = Math.max(0, state.score - 10);
+
+            showFeedback(`💡 Hint: ${question.hint} (-10 points)`, 'hint');
+            updateGameStats();
+        }
+
+        function skipQuestion() {
+            const state = window.languageGameState;
+            if (!state) {
+                console.error('Game state not found');
+                return;
+            }
+
+            state.score = Math.max(0, state.score - 5);
+            showFeedback('Question skipped! (-5 points)', 'warning');
+            updateGameStats();
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            const state = window.languageGameState;
+            if (!state) {
+                console.error('Game state not found');
+                return;
+            }
+
+            state.questionNum++;
+
+            if (state.questionNum > state.totalQuestions) {
+                endGame('Congratulations! You completed all questions!');
+            } else {
+                generateQuestion();
+            }
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const state = window.languageGameState;
+            if (!state) return;
+
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+
+            if (!progressFill || !progressText) return;
+
+            const progress = (state.questionNum - 1) / state.totalQuestions * 100;
+
+            progressFill.style.width = progress + '%';
+            progressText.textContent = `${state.questionNum - 1}/${state.totalQuestions}`;
+        }
+
+        function updateGameStats() {
+            const state = window.languageGameState;
+            if (!state) return;
+
+            const scoreElement = document.getElementById('score');
+            const comboElement = document.getElementById('combo');
+            const levelElement = document.getElementById('level');
+            const wordsElement = document.getElementById('wordsLearned');
+            const questionNumElement = document.getElementById('questionNum');
+
+            if (scoreElement) scoreElement.textContent = state.score;
+            if (comboElement) comboElement.textContent = state.combo;
+            if (levelElement) levelElement.textContent = state.level;
+            if (wordsElement) wordsElement.textContent = state.wordsLearned;
+            if (questionNumElement) questionNumElement.textContent = state.questionNum;
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            if (feedback) {
+                feedback.textContent = message;
+                feedback.className = `feedback ${type}`;
+
+                setTimeout(() => {
+                    feedback.textContent = '';
+                    feedback.className = 'feedback';
+                }, 3000);
+            }
+        }
+
+        function checkAchievements() {
+            const state = window.languageGameState;
+            if (!state) return;
+
+            // Combo achievements
+            if (state.combo === 5) {
+                showFeedback('🏆 Achievement Unlocked: Combo Master!', 'achievement');
+            } else if (state.combo === 10) {
+                showFeedback('🏆 Achievement Unlocked: Combo Legend!', 'achievement');
+            }
+
+            // Score achievements
+            if (state.score >= 100) {
+                showFeedback('🏆 Achievement Unlocked: Word Master!', 'achievement');
+            } else if (state.score >= 500) {
+                showFeedback('🏆 Achievement Unlocked: Language Champion!', 'achievement');
+            }
+
+            // Words learned achievements
+            if (state.wordsLearned >= 50) {
+                showFeedback('🏆 Achievement Unlocked: Vocabulary Builder!', 'achievement');
+            }
+        }
+
+        function endGame(message) {
+            const state = window.languageGameState;
+            if (!state) return;
+
+            // Calculate final stats
+            const accuracy = state.questionsAnswered > 0 ?
+                Math.round((state.correctAnswers / state.questionsAnswered) * 100) : 0;
+            const timeElapsed = Math.round((Date.now() - state.startTime) / 1000);
+
+            const gameContent = document.getElementById('gameContent');
+            if (gameContent) {
+                gameContent.innerHTML = `
+                    <div class="game-end">
+                        <h2>${message}</h2>
+                        <div class="final-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Final Score</span>
+                                <span class="stat-value">${state.score}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Accuracy</span>
+                                <span class="stat-value">${accuracy}%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Words Learned</span>
+                                <span class="stat-value">${state.wordsLearned}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Time</span>
+                                <span class="stat-value">${timeElapsed}s</span>
+                            </div>
+                        </div>
+                        <div class="game-actions">
+                            <button class="control-btn" onclick="loadLanguageGame('${state.category}')">Play Again</button>
+                            <button class="control-btn" onclick="closeGameModal()">Back to Menu</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateGameSettings() {
+            const categoryType = document.getElementById('categoryType');
+            const difficulty = document.getElementById('difficultyLevel');
+
+            if (categoryType && difficulty && window.languageGameState) {
+                window.languageGameState.category = categoryType.value;
+                window.languageGameState.difficulty = difficulty.value;
+            }
+        }
+
+        function playSound(type) {
+            // Placeholder for sound effects
+            console.log(`Playing ${type} sound`);
+        }
+
+        // Test function for quick testing
+        function testGameMode(category) {
+            console.log('Testing language category:', category);
+            try {
+                startLanguageGame(category);
+            } catch (error) {
+                console.error('Error testing language category:', error);
+                alert('Error testing language category. Please try again.');
+            }
+        }
+
+        // Global error handler
+        window.addEventListener('error', function (e) {
+            console.error('Global error:', e.error);
+        });
+
+        console.log('Language game script loaded successfully');
+    </script>
+</body>
+
+</html>

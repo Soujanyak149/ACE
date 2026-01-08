@@ -1,0 +1,19 @@
+# ACE Learning Platform Backend Dependencies
+Flask==2.3.3
+Flask-CORS==4.0.0
+Flask-SocketIO==5.3.6
+Flask-SQLAlchemy==3.0.5
+Werkzeug==2.3.7
+
+# SocketIO runtime
+python-socketio==5.8.0
+python-engineio==4.7.1
+eventlet==0.33.3
+
+# Server
+gunicorn==21.2.0
+
+# Utilities
+marshmallow==3.20.1
+python-dotenv==1.0.0
+PyJWT==2.8.0

@@ -1,0 +1,2660 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Practice - ACE Learning Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/games.css') }}">
+    <style>
+        .math-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .math-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="math-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23math-pattern)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .math-title {
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: mathTitleFloat 3s ease-in-out infinite;
+        }
+
+        .math-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+            padding: 0 20px;
+        }
+
+        .game-mode-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .game-mode-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .game-mode-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .game-mode-card h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .game-mode-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .mode-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .mode-feature {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .start-game-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            margin-top: 15px;
+        }
+
+        .start-game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .back-to-main {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-main:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        @keyframes mathTitleFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .floating-numbers {
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-numbers:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-numbers:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-numbers:nth-child(3) {
+            bottom: 30%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        .stats-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stats-preview h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .achievements-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .achievements-preview h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+
+        .achievement-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            color: #ffd700;
+        }
+
+        .achievement-info h4 {
+            color: white;
+            margin: 0;
+            text-align: left;
+        }
+
+        .achievement-info p {
+            color: rgba(255, 255, 255, 0.7);
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .quick-test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .quick-test-section h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+
+        .test-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .test-btn {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .test-note {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        /* Game Interface Styles */
+        .math-game-modal {
+            max-width: 1100px;
+            width: 95%;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        .math-game-container {
+            padding: 25px;
+            color: #333;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding: 20px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .game-mode-info h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .game-mode-info p {
+            margin: 0;
+            opacity: 0.9;
+            color: #2c3e50;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+            min-width: 80px;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .question-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 30px 60px;
+            margin-bottom: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .question-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .difficulty-badge {
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .difficulty-badge.easy {
+            background: #4caf50;
+            color: white;
+        }
+
+        .difficulty-badge.medium {
+            background: #ff9800;
+            color: white;
+        }
+
+        .difficulty-badge.hard {
+            background: #f44336;
+            color: white;
+        }
+
+        .question {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            font-size: 4rem;
+            font-weight: bold;
+            color: #333;
+            margin: 30px 0;
+        }
+
+        .operand {
+            background: #f8f9fa;
+            padding: 25px 40px;
+            border-radius: 15px;
+            border: 3px solid #e9ecef;
+            min-width: 140px;
+            text-align: center;
+            font-size: 4.5rem;
+        }
+
+        .operator {
+            color: #667eea;
+            font-size: 5rem;
+            font-weight: 900;
+        }
+
+        .equals {
+            color: #666;
+            font-size: 4rem;
+        }
+
+        .answer-input input {
+            width: 180px;
+            height: 100px;
+            font-size: 4rem;
+            font-weight: 900;
+            text-align: center;
+            border: 3px solid #e9ecef;
+            border-radius: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .answer-input input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 5px rgba(102, 126, 234, 0.2);
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hint-btn {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .hint-btn:hover {
+            background: #ffb300;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .skip-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .skip-btn:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        .progress-section {
+            margin-bottom: 15px;
+            padding: 0 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .feedback {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 15px;
+            font-size: 1.1rem;
+        }
+
+        .feedback.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .feedback.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .feedback.hint {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .feedback.warning {
+            background: #ffeaa7;
+            color: #856404;
+            border: 1px solid #fdcb6e;
+        }
+
+        .feedback.achievement {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            border: 1px solid #ffd700;
+            animation: achievementGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes achievementGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        .game-settings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .setting-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .setting-group select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .setting-group select:focus {
+            border-color: #667eea;
+        }
+
+        .game-end {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .game-end h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .final-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .final-stats .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .final-stats .stat-label {
+            display: block;
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .final-stats .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .game-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .game-actions .control-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .math-game-modal {
+                width: 98%;
+                max-height: 98vh;
+            }
+
+            .game-header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 15px;
+            }
+
+            .game-stats {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .question-container {
+                padding: 30px 20px 40px;
+                min-height: 280px;
+            }
+
+            .question {
+                font-size: 2.5rem;
+                flex-wrap: wrap;
+                gap: 15px;
+                margin: 20px 0;
+            }
+
+            .operand {
+                padding: 15px 25px;
+                min-width: 100px;
+                font-size: 2.5rem;
+            }
+
+            .operator {
+                font-size: 3rem;
+            }
+
+            .equals {
+                font-size: 2.5rem;
+            }
+
+            .answer-input input {
+                width: 120px;
+                height: 70px;
+                font-size: 2.5rem;
+            }
+
+            .game-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .control-btn {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
+
+            .difficulty-badge {
+                font-size: 0.85rem;
+                padding: 6px 15px;
+            }
+
+            .question-number {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* ==================== SUPER ENGAGING ENHANCEMENTS ==================== */
+
+        /* Floating Particles Effect */
+        .question-container {
+            position: relative;
+            overflow: visible !important;
+        }
+
+        .question-container::before {
+            content: '✨';
+            position: absolute;
+            top: -20px;
+            left: 10%;
+            font-size: 1.5rem;
+            animation: floatParticle 3s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        .question-container::after {
+            content: '⭐';
+            position: absolute;
+            top: -20px;
+            right: 10%;
+            font-size: 1.5rem;
+            animation: floatParticle 3s ease-in-out infinite 1.5s;
+            opacity: 0.6;
+        }
+
+        @keyframes floatParticle {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        /* Glowing Number Effect */
+        .operand {
+            position: relative;
+            animation: numberPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .operand:hover {
+            transform: scale(1.1) rotate(2deg);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        @keyframes numberPop {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.1) rotate(10deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Operator Pulse */
+        .operator {
+            animation: operatorPulse 2s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        @keyframes operatorPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        /* Enhanced Answer Input */
+        .answer-input {
+            position: relative;
+        }
+
+        .answer-input input {
+            animation: answerGlow 2s ease-in-out infinite;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        .answer-input input:focus {
+            animation: answerFocus 0.5s ease-out;
+            transform: scale(1.05);
+            font-weight: 900;
+        }
+
+        @keyframes answerGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(102, 126, 234, 0.4);
+            }
+        }
+
+        @keyframes answerFocus {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Score Counter Animation */
+        .stat-value {
+            animation: scoreCounter 0.5s ease-out;
+            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+        }
+
+        @keyframes scoreCounter {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3) rotate(5deg);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Streak Combo Effect */
+        .stat:nth-child(2) .stat-value {
+            background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff6348);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbowStreak 3s linear infinite;
+        }
+
+        @keyframes rainbowStreak {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Progress Bar Enhanced */
+        .progress-fill {
+            position: relative;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            background-size: 200% 100%;
+            animation: progressShimmer 2s ease-in-out infinite;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: progressGlide 1.5s ease-in-out infinite;
+        }
+
+        @keyframes progressShimmer {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes progressGlide {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Confetti for Correct Answers */
+        .confetti-particle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 9999;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Shake Animation for Wrong Answers */
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-2px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(4px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-8px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(8px, 0, 0);
+            }
+        }
+
+        /* Success Celebration */
+        .celebrate {
+            animation: celebrate 0.6s ease-out;
+        }
+
+        @keyframes celebrate {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            25% {
+                transform: scale(1.1) rotate(-5deg);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            75% {
+                transform: scale(1.1) rotate(5deg);
+            }
+        }
+
+        /* Button Hover Effects Enhanced */
+        .control-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .control-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Floating Numbers Background */
+        .floating-number {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0.1;
+            color: #667eea;
+            animation: floatAround 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes floatAround {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            25% {
+                transform: translate(20px, -20px) rotate(90deg);
+            }
+
+            50% {
+                transform: translate(0, -40px) rotate(180deg);
+            }
+
+            75% {
+                transform: translate(-20px, -20px) rotate(270deg);
+            }
+        }
+
+        /* Level Up Animation */
+        .level-up-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            padding: 30px 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.6);
+            z-index: 10000;
+            animation: levelUpPop 2s ease-out forwards;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+
+        @keyframes levelUpPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
+                opacity: 1;
+            }
+
+            70% {
+                transform: translate(-50%, -50%) scale(0.9) rotate(-5deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 0;
+            }
+        }
+
+        /* Stars Rating Effect */
+        .stars-rating {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .star {
+            font-size: 2rem;
+            animation: starPop 0.5s ease-out backwards;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+        }
+
+        .star:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .star:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .star:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes starPop {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.3) rotate(20deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Question Number Badge Pulse */
+        .question-number {
+            animation: badgePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            }
+        }
+
+        /* Difficulty Badge Glow */
+        .difficulty-badge {
+            animation: badgeGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes badgeGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px currentColor;
+            }
+
+            50% {
+                box-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/" class="back-to-main">← Back to Main</a>
+
+    <div class="math-hero">
+        <div class="floating-numbers">π</div>
+        <div class="floating-numbers">∞</div>
+        <div class="floating-numbers">∑</div>
+
+        <h1 class="math-title">🧮 Math Practice</h1>
+        <p class="math-subtitle">Master mathematics through interactive challenges and adaptive learning</p>
+    </div>
+
+    <div class="game-modes">
+        <div class="game-mode-card" onclick="startMathGame('practice')">
+            <span class="game-mode-icon">📚</span>
+            <h3>Practice Mode</h3>
+            <p>Learn at your own pace with unlimited questions and adaptive difficulty</p>
+            <div class="mode-features">
+                <span class="mode-feature">Adaptive</span>
+                <span class="mode-feature">Unlimited</span>
+                <span class="mode-feature">Hints</span>
+            </div>
+            <button class="start-game-btn">Start Practice</button>
+        </div>
+
+        <div class="game-mode-card" onclick="startMathGame('timed')">
+            <span class="game-mode-icon">⏱️</span>
+            <h3>Timed Challenge</h3>
+            <p>Race against the clock to solve as many problems as possible</p>
+            <div class="mode-features">
+                <span class="mode-feature">Timed</span>
+                <span class="mode-feature">Speed Bonus</span>
+                <span class="mode-feature">Leaderboard</span>
+            </div>
+            <button class="start-game-btn">Start Challenge</button>
+        </div>
+
+        <div class="game-mode-card" onclick="startMathGame('survival')">
+            <span class="game-mode-icon">🔥</span>
+            <h3>Survival Mode</h3>
+            <p>Answer correctly to survive - one wrong answer ends the game!</p>
+            <div class="mode-features">
+                <span class="mode-feature">Survival</span>
+                <span class="mode-feature">Combo Bonus</span>
+                <span class="mode-feature">High Score</span>
+            </div>
+            <button class="start-game-btn">Start Survival</button>
+        </div>
+
+        <div class="game-mode-card" onclick="startMathGame('boss')">
+            <span class="game-mode-icon">👹</span>
+            <h3>Boss Level</h3>
+            <p>Face the ultimate math challenge with complex problems and time pressure</p>
+            <div class="mode-features">
+                <span class="mode-feature">Boss Fight</span>
+                <span class="mode-feature">Complex</span>
+                <span class="mode-feature">Rewards</span>
+            </div>
+            <button class="start-game-btn">Fight Boss</button>
+        </div>
+    </div>
+
+    <div class="stats-preview">
+        <h3>📊 Your Math Statistics</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">87%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">2.3s</div>
+                <div class="stat-label">Avg Time</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">156</div>
+                <div class="stat-label">Questions</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Streak</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="achievements-preview">
+        <h3>🏆 Recent Achievements</h3>
+        <div class="achievement-item">
+            <div class="achievement-icon">🥇</div>
+            <div class="achievement-info">
+                <h4>Math Master</h4>
+                <p>Completed 50 questions with 90% accuracy</p>
+            </div>
+        </div>
+        <div class="achievement-item">
+            <div class="achievement-icon">🔥</div>
+            <div class="achievement-info">
+                <h4>Streak Champion</h4>
+                <p>Maintained a 10-question streak</p>
+            </div>
+        </div>
+        <div class="achievement-item">
+            <div class="achievement-icon">⚡</div>
+            <div class="achievement-info">
+                <h4>Speed Demon</h4>
+                <p>Answered 5 questions in under 10 seconds</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Test Section -->
+    <div class="quick-test-section">
+        <h3>🧪 Quick Test - Try All Modes</h3>
+        <div class="test-buttons">
+            <button class="test-btn" onclick="testGameMode('practice')">Test Practice Mode</button>
+            <button class="test-btn" onclick="testGameMode('timed')">Test Timed Mode</button>
+            <button class="test-btn" onclick="testGameMode('survival')">Test Survival Mode</button>
+            <button class="test-btn" onclick="testGameMode('boss')">Test Boss Mode</button>
+        </div>
+        <p class="test-note">Click any button to test the game modes quickly!</p>
+    </div>
+
+    <!-- Game Modal -->
+    <div id="gameModal" class="modal">
+        <div class="modal-content math-game-modal">
+            <span class="close" onclick="closeGameModal()">&times;</span>
+            <div id="gameContent"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+    <script>
+        function startMathGame(mode) {
+            console.log('Starting math game with mode:', mode);
+            try {
+                openGameModal();
+                loadMathGame(mode);
+            } catch (error) {
+                console.error('Error starting math game:', error);
+                alert('Error starting game. Please try again.');
+            }
+        }
+
+        // Enhanced math game with multiple modes
+        function loadMathGame(mode = 'practice') {
+            console.log('Loading math game for mode:', mode);
+
+            // Clear any existing timer from previous game session
+            if (window.mathGameState && window.mathGameState.timer) {
+                clearInterval(window.mathGameState.timer);
+                console.log('Cleared existing timer in loadMathGame');
+            }
+
+            const gameContent = document.getElementById('gameContent');
+
+            if (!gameContent) {
+                console.error('Game content container not found');
+                return;
+            }
+
+            const gameHTML = `
+                <div class="math-game-container">
+                    <div class="game-header">
+                        <div class="game-mode-info">
+                            <h2>${getModeTitle(mode)}</h2>
+                            <p>${getModeDescription(mode)}</p>
+                        </div>
+                        <div class="game-stats">
+                            <div class="stat">
+                                <span class="stat-label">Score</span>
+                                <span class="stat-value" id="score">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Streak</span>
+                                <span class="stat-value" id="streak">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Level</span>
+                                <span class="stat-value" id="level">1</span>
+                            </div>
+                            ${mode === 'timed' ? '<div class="stat"><span class="stat-label">Time</span><span class="stat-value" id="timer">60</span></div>' : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <div class="question-header">
+                            <span class="question-number">Question <span id="questionNum">1</span></span>
+                            <span class="difficulty-badge" id="difficulty">Easy</span>
+                        </div>
+                        <div class="question" id="question">
+                            <span class="operand" id="operand1">5</span>
+                            <span class="operator" id="operator">+</span>
+                            <span class="operand" id="operand2">3</span>
+                            <span class="equals">=</span>
+                            <span class="answer-input">
+                                <input type="number" id="answerInput" placeholder="?" autocomplete="off">
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="game-controls">
+                        <button class="control-btn hint-btn" onclick="showHint()">
+                            <span class="btn-icon">💡</span>
+                            Hint (-10 pts)
+                        </button>
+                        <button class="control-btn submit-btn" onclick="submitAnswer()">
+                            <span class="btn-icon">✅</span>
+                            Submit Answer
+                        </button>
+                        <button class="control-btn skip-btn" onclick="skipQuestion()">
+                            <span class="btn-icon">⏭️</span>
+                            Skip (-5 pts)
+                        </button>
+                    </div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Progress: <span id="progressText">0/10</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback" id="feedback"></div>
+                    
+                    <div class="game-settings">
+                        <div class="setting-group">
+                            <label>Operation Type:</label>
+                            <select id="operationType" onchange="updateGameSettings()">
+                                <option value="all">All Operations</option>
+                                <option value="addition">Addition Only</option>
+                                <option value="subtraction">Subtraction Only</option>
+                                <option value="multiplication">Multiplication Only</option>
+                                <option value="division">Division Only</option>
+                                <option value="fractions">✨ Fractions & Decimals</option>
+                                <option value="percentages">✨ Percentages & Ratios</option>
+                                <option value="algebra">✨ Algebra Basics</option>
+                                <option value="geometry">✨ Geometry</option>
+                                <option value="pemdas">✨ Order of Operations</option>
+                                <option value="wordproblems">🔥 Word Problems</option>
+                                <option value="trigonometry">🔥 Trigonometry</option>
+                                <option value="exponents">🔥 Exponents & Roots</option>
+                                <option value="statistics">🔥 Statistics & Data</option>
+                                <option value="precalculus">🔥 Pre-Calculus</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label>Difficulty:</label>
+                            <select id="difficultyLevel" onchange="updateGameSettings()">
+                                <option value="adaptive">Adaptive</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            gameContent.innerHTML = gameHTML;
+            console.log('Game HTML loaded, initializing...');
+            initializeMathGame(mode);
+        }
+
+        function getModeTitle(mode) {
+            const titles = {
+                'practice': '📚 Practice Mode',
+                'timed': '⏱️ Timed Challenge',
+                'survival': '🔥 Survival Mode',
+                'boss': '👹 Boss Level'
+            };
+            return titles[mode] || 'Math Practice';
+        }
+
+        function getModeDescription(mode) {
+            const descriptions = {
+                'practice': 'Learn at your own pace with adaptive difficulty',
+                'timed': 'Solve as many problems as you can in 60 seconds',
+                'survival': 'Keep answering correctly to survive - one wrong answer ends the game!',
+                'boss': 'Face the ultimate challenge with complex problems'
+            };
+            return descriptions[mode] || 'Practice your math skills';
+        }
+
+        function initializeMathGame(mode) {
+            console.log('Initializing math game for mode:', mode);
+
+            // Clear any existing timer from previous game
+            if (window.mathGameState && window.mathGameState.timer) {
+                clearInterval(window.mathGameState.timer);
+                console.log('Cleared existing timer');
+            }
+
+            // Initialize game state
+            window.mathGameState = {
+                mode: mode,
+                score: 0,
+                streak: 0,
+                level: 1,
+                questionNum: 1,
+                totalQuestions: mode === 'survival' ? Infinity : 10,
+                currentQuestion: null,
+                timer: null,
+                startTime: Date.now(),
+                operationType: 'all',
+                difficulty: 'adaptive',
+                questionsAnswered: 0,
+                correctAnswers: 0
+            };
+
+            // Set up timer for timed mode only
+            if (mode === 'timed') {
+                startTimer();
+            }
+
+            // Generate first question
+            generateQuestion();
+
+            // Focus on answer input
+            const answerInput = document.getElementById('answerInput');
+            if (answerInput) {
+                answerInput.focus();
+
+                // Add event listeners
+                answerInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        submitAnswer();
+                    }
+                });
+            }
+
+            console.log('Math game initialized successfully');
+        }
+
+        function startTimer() {
+            // Clear any existing timer first
+            if (window.mathGameState && window.mathGameState.timer) {
+                clearInterval(window.mathGameState.timer);
+                console.log('Cleared existing timer before starting new one');
+            }
+
+            let timeLeft = 60;
+            const timerElement = document.getElementById('timer');
+
+            if (!timerElement) {
+                console.error('Timer element not found');
+                return;
+            }
+
+            window.mathGameState.timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    endGame('Time\'s up!');
+                }
+            }, 1000);
+
+            console.log('Timer started with 60 seconds');
+        }
+
+        function generateQuestion() {
+            const state = window.mathGameState;
+            if (!state) {
+                console.error('Game state not found');
+                return;
+            }
+
+            const difficulty = state.difficulty === 'adaptive' ? getAdaptiveDifficulty() : state.difficulty;
+
+            // Debug: Log the current operation type
+            console.log('Generating question for operation type:', state.operationType);
+
+            let question;
+            let attempts = 0;
+            const maxAttempts = 10;
+
+            // History to prevent immediate repeats
+            if (!state.history) state.history = [];
+
+            do {
+                switch (state.operationType) {
+                    case 'addition':
+                        question = generateAdditionQuestion(difficulty);
+                        break;
+                    case 'subtraction':
+                        question = generateSubtractionQuestion(difficulty);
+                        break;
+                    case 'multiplication':
+                        question = generateMultiplicationQuestion(difficulty);
+                        break;
+                    case 'division':
+                        question = generateDivisionQuestion(difficulty);
+                        break;
+                    case 'fractions':
+                        question = generateFractionsQuestion(difficulty);
+                        break;
+                    case 'percentages':
+                        question = generatePercentagesQuestion(difficulty);
+                        break;
+                    case 'algebra':
+                        question = generateAlgebraQuestion(difficulty);
+                        break;
+                    case 'geometry':
+                        question = generateGeometryQuestion(difficulty);
+                        break;
+                    case 'pemdas':
+                        question = generatePemdasQuestion(difficulty);
+                        break;
+                    case 'wordproblems':
+                        question = generateWordProblemsQuestion(difficulty);
+                        break;
+                    case 'trigonometry':
+                        question = generateTrigonometryQuestion(difficulty);
+                        break;
+                    case 'exponents':
+                        question = generateExponentsQuestion(difficulty);
+                        break;
+                    case 'statistics':
+                        question = generateStatisticsQuestion(difficulty);
+                        break;
+                    case 'precalculus':
+                        question = generatePreCalculusQuestion(difficulty);
+                        break;
+                    default:
+                        question = generateRandomQuestion(difficulty);
+                }
+                attempts++;
+
+                // Construct a simple identifier for the question
+                const qId = question.question || `${question.operand1}${question.operator}${question.operand2}`;
+                if (!state.history.includes(qId) || attempts >= maxAttempts) {
+                    state.history.push(qId);
+                    if (state.history.length > 10) state.history.shift(); // Keep last 10
+                    break;
+                }
+            } while (true);
+
+            state.currentQuestion = question;
+            displayQuestion(question);
+            updateDifficultyBadge(difficulty);
+        }
+
+        function getAdaptiveDifficulty() {
+            const state = window.mathGameState;
+            if (!state) return 'easy';
+
+            const accuracy = state.questionsAnswered > 0 ? state.correctAnswers / state.questionsAnswered : 1.0;
+
+            // Fast adaptation: increase after 2 correct answers in a row, decrease after 1 wrong
+            if (state.streak >= 3) return 'hard';
+            if (state.streak >= 1) return 'medium';
+            return 'easy';
+        }
+
+        function generateAdditionQuestion(difficulty) {
+            let q;
+            if (difficulty === 'easy') {
+                const a = Math.floor(Math.random() * 20) + 1;
+                const b = Math.floor(Math.random() * 20) + 1;
+                q = { operand1: a, operand2: b, operator: '+', answer: a + b };
+            } else if (difficulty === 'medium') {
+                const a = Math.floor(Math.random() * 100) + 20;
+                const b = Math.floor(Math.random() * 100) + 20;
+                const c = Math.floor(Math.random() * 50) + 1;
+                q = {
+                    question: `Calculate: ${a} + ${b} + ${c}`,
+                    answer: a + b + c,
+                    hint: `Try adding ${a} + ${b} first (${a + b}), then add ${c}.`
+                };
+            } else {
+                const a = Math.floor(Math.random() * 1000) + 100;
+                const b = Math.floor(Math.random() * 1000) + 100;
+                const dec1 = Math.round(Math.random() * 100) / 100;
+                const dec2 = Math.round(Math.random() * 100) / 100;
+                const val1 = a + dec1;
+                const val2 = b + dec2;
+                const ans = Math.round((val1 + val2) * 100) / 100;
+                q = {
+                    question: `Carefully calculate: ${val1} + ${val2}`,
+                    answer: ans,
+                    hint: `Align the decimal points and add column by column.`
+                };
+            }
+            return { ...q, difficulty };
+        }
+
+        function generateSubtractionQuestion(difficulty) {
+            let q;
+            if (difficulty === 'easy') {
+                const a = Math.floor(Math.random() * 20) + 5;
+                const b = Math.floor(Math.random() * a) + 1;
+                q = { operand1: a, operand2: b, operator: '-', answer: a - b };
+            } else if (difficulty === 'medium') {
+                const a = Math.floor(Math.random() * 200) + 50;
+                const b = Math.floor(Math.random() * 50) + 10;
+                const c = Math.floor(Math.random() * 30) + 1;
+                q = {
+                    question: `Calculate: ${a} - ${b} - ${c}`,
+                    answer: a - b - c,
+                    hint: `First do ${a} - ${b} = ${a - b}, then subtract ${c}.`
+                };
+            } else {
+                const a = Math.floor(Math.random() * 1000) + 500;
+                const b = Math.floor(Math.random() * 400) + 100;
+                const dec1 = Math.round(Math.random() * 100) / 100;
+                const dec2 = Math.round(Math.random() * 100) / 100;
+                const val1 = a + dec1;
+                const val2 = b + dec2;
+                const ans = Math.round((val1 - val2) * 100) / 100;
+                q = {
+                    question: `Solve: ${val1} - ${val2}`,
+                    answer: ans,
+                    hint: `Double check your borrowing if decimals are tricky!`
+                };
+            }
+            return { ...q, difficulty };
+        }
+
+        function generateMultiplicationQuestion(difficulty) {
+            let q;
+            if (difficulty === 'easy') {
+                const a = Math.floor(Math.random() * 12) + 1;
+                const b = Math.floor(Math.random() * 10) + 1;
+                q = { operand1: a, operand2: b, operator: '×', answer: a * b };
+            } else if (difficulty === 'medium') {
+                const a = Math.floor(Math.random() * 20) + 11;
+                const b = Math.floor(Math.random() * 12) + 2;
+                q = {
+                    question: `Find the product: ${a} × ${b}`,
+                    answer: a * b,
+                    hint: `Break it down: (${a} × 10) + (${a} × ${b - 10}) if it helps.`
+                };
+            } else {
+                const a = Math.floor(Math.random() * 100) + 20;
+                const b = Math.floor(Math.random() * 50) + 10;
+                q = {
+                    question: `Calculate: ${a} × ${b}`,
+                    answer: a * b,
+                    hint: `Multiply ${a} by ${b / 10} and then by 10, or use long multiplication.`
+                };
+            }
+            return { ...q, difficulty };
+        }
+
+        function generateDivisionQuestion(difficulty) {
+            let q;
+            if (difficulty === 'easy') {
+                const answer = Math.floor(Math.random() * 10) + 1;
+                const divisor = Math.floor(Math.random() * 5) + 1;
+                const dividend = answer * divisor;
+                q = { operand1: dividend, operand2: divisor, operator: '÷', answer: answer };
+            } else if (difficulty === 'medium') {
+                const answer = Math.floor(Math.random() * 20) + 10;
+                const divisor = Math.floor(Math.random() * 12) + 2;
+                const dividend = answer * divisor;
+                q = {
+                    question: `Divide: ${dividend} ÷ ${divisor}`,
+                    answer: answer,
+                    hint: `How many times does ${divisor} go into ${dividend}?`
+                };
+            } else {
+                const answer = Math.floor(Math.random() * 50) + 20;
+                const divisor = Math.floor(Math.random() * 25) + 5;
+                const dividend = answer * divisor;
+                q = {
+                    question: `Calculate: ${dividend} ÷ ${divisor}`,
+                    answer: answer,
+                    hint: `Use long division or try to simplify the numbers first.`
+                };
+            }
+            return { ...q, difficulty };
+        }
+
+        // ========== NEW TOPICS - QUESTION GENERATORS ==========
+
+        function generateFractionsQuestion(difficulty) {
+            if (difficulty === 'easy') {
+                const num = [1, 1, 3, 2, 4][Math.floor(Math.random() * 5)];
+                const den = [2, 4, 4, 5, 5][Math.floor(Math.random() * 5)];
+                const ans = Math.round((num / den) * 100) / 100;
+                return {
+                    question: `Convert the fraction ${num}/${den} to a decimal.`,
+                    answer: ans,
+                    difficulty,
+                    hint: `Divide ${num} by ${den}.`
+                };
+            } else if (difficulty === 'medium') {
+                const a = 1;
+                const b = 4;
+                const c = 1;
+                const d = 2;
+                // 1/4 + 1/2 = 3/4 = 0.75
+                return {
+                    question: `What is 1/4 + 1/2? (Answer as a decimal)`,
+                    answer: 0.75,
+                    difficulty,
+                    hint: `1/2 is the same as 2/4. Now add 1/4 + 2/4.`
+                };
+            } else {
+                const num = Math.floor(Math.random() * 10) + 5;
+                const den = Math.floor(Math.random() * 4) + 2;
+                const ans = Math.round((num / den) * 100) / 100;
+                return {
+                    question: `Convert ${num}/${den} to a decimal. (Round to 2 places)`,
+                    answer: ans,
+                    difficulty,
+                    hint: `Perform the division: ${num} ÷ ${den}`
+                };
+            }
+        }
+
+        function generatePercentagesQuestion(difficulty) {
+            if (difficulty === 'easy') {
+                const percent = [10, 20, 25, 50][Math.floor(Math.random() * 4)];
+                const number = [20, 40, 60, 80, 100, 200][Math.floor(Math.random() * 6)];
+                const answer = (percent / 100) * number;
+                return {
+                    question: `What is ${percent}% of ${number}?`,
+                    answer: answer,
+                    difficulty,
+                    hint: `Convert ${percent}% to ${percent / 100} and multiply by ${number}.`
+                };
+            } else if (difficulty === 'medium') {
+                // Ratios
+                const a = Math.floor(Math.random() * 5) + 2;
+                const b = Math.floor(Math.random() * 5) + 2;
+                const factor = Math.floor(Math.random() * 10) + 5;
+                const total = (a + b) * factor;
+                return {
+                    question: `The ratio of boys to girls is ${a}:${b}. If there are ${total} students in total, how many are boys?`,
+                    answer: a * factor,
+                    difficulty,
+                    hint: `Total parts = ${a} + ${b} = ${a + b}. Each part = ${total} ÷ ${a + b}.`
+                };
+            } else {
+                const original = Math.floor(Math.random() * 200) + 100;
+                const increase = [10, 15, 20, 25][Math.floor(Math.random() * 4)];
+                const final = Math.round(original * (1 + increase / 100) * 100) / 100;
+                return {
+                    question: `A price of $${original} increases by ${increase}%. What is the new price?`,
+                    answer: final,
+                    difficulty,
+                    hint: `New Price = ${original} × (1 + ${increase / 100}).`
+                };
+            }
+        }
+
+        function generateAlgebraQuestion(difficulty) {
+            if (difficulty === 'easy') {
+                // 8th-10th: Linear equations and basics
+                const a = Math.floor(Math.random() * 8) + 2;
+                const x = Math.floor(Math.random() * 12) + 1;
+                const b = Math.floor(Math.random() * 20) + 1;
+                const res = a * x + b;
+                return {
+                    question: `Solve for x: ${a}x + ${b} = ${res}`,
+                    answer: x,
+                    difficulty,
+                    hint: `Subtract ${b}, then divide by ${a}.`
+                };
+            } else if (difficulty === 'medium') {
+                // 11th-12th: Quadratics and logs
+                const x1 = Math.floor(Math.random() * 5) + 1;
+                const x2 = Math.floor(Math.random() * 5) + 1;
+                const b = -(x1 + x2);
+                const c = x1 * x2;
+                // x^2 + bx + c = 0
+                return {
+                    question: `Find the smaller root of x² ${b >= 0 ? '+' : ''}${b}x ${c >= 0 ? '+' : ''}${c} = 0`,
+                    answer: Math.min(x1, x2),
+                    difficulty,
+                    hint: `Factor the equation into (x - ${x1})(x - ${x2}) = 0.`
+                };
+            } else {
+                // Undergrad: Linear Algebra (2x2 Determinant)
+                const a = Math.floor(Math.random() * 5) + 1;
+                const b = Math.floor(Math.random() * 5) + 1;
+                const c = Math.floor(Math.random() * 5) + 1;
+                const d = Math.floor(Math.random() * 5) + 1;
+                return {
+                    question: `Find the determinant of the 2x2 matrix [[${a}, ${b}], [${c}, ${d}]]`,
+                    answer: (a * d) - (b * c),
+                    difficulty,
+                    hint: `Determinant of [[a,b],[c,d]] is ad - bc.`
+                };
+            }
+        }
+
+        function generateGeometryQuestion(difficulty) {
+            if (difficulty === 'easy') {
+                const l = Math.floor(Math.random() * 10) + 2;
+                const w = Math.floor(Math.random() * 10) + 2;
+                return {
+                    question: `Find the perimeter of a rectangle with length=${l} and width=${w}.`,
+                    answer: 2 * (l + w),
+                    difficulty,
+                    hint: `Perimeter = 2 × (length + width)`
+                };
+            } else if (difficulty === 'medium') {
+                const r = [7, 14, 21][Math.floor(Math.random() * 3)];
+                const area = Math.round(Math.PI * r * r * 100) / 100;
+                return {
+                    question: `Find the area of a circle with radius=${r}. (Use π ≈ 3.14159, round to 2 decimals)`,
+                    answer: area,
+                    difficulty,
+                    hint: `Area = π × r² = π × ${r}²`
+                };
+            } else {
+                const a = 6;
+                const b = 8;
+                const h = 5;
+                const vol = a * b * h;
+                return {
+                    question: `Find the volume of a rectangular prism with sides ${a}, ${b}, and height ${h}.`,
+                    answer: vol,
+                    difficulty,
+                    hint: `Volume = length × width × height`
+                };
+            }
+        }
+
+        function generatePemdasQuestion(difficulty) {
+            if (difficulty === 'easy') {
+                const a = Math.floor(Math.random() * 10) + 1;
+                const b = Math.floor(Math.random() * 5) + 2;
+                const c = Math.floor(Math.random() * 5) + 2;
+                return {
+                    question: `Evaluate: ${a} + ${b} × ${c}`,
+                    answer: a + (b * c),
+                    difficulty,
+                    hint: `Order of operations: Multiply ${b} × ${c} first.`
+                };
+            } else if (difficulty === 'medium') {
+                const a = Math.floor(Math.random() * 10) + 5;
+                const b = Math.floor(Math.random() * 10) + 2;
+                const c = Math.floor(Math.random() * 5) + 2;
+                return {
+                    question: `Evaluate: (${a} - ${b}) × ${c}`,
+                    answer: (a - b) * c,
+                    difficulty,
+                    hint: `Order of operations: Do the subtraction in parentheses first.`
+                };
+            } else {
+                const a = 20;
+                const b = 4;
+                const c = 2;
+                const d = 3;
+                // (20 / 4) + 2^3
+                return {
+                    question: `Evaluate: (${a} ÷ ${b}) + ${c}³`,
+                    answer: (a / b) + Math.pow(c, d),
+                    difficulty,
+                    hint: `1. Parentheses, 2. Exponents, 3. Division, 4. Addition.`
+                };
+            }
+        }
+
+        // ========== ADVANCED TOPICS - COMPREHENSIVE GENERATORS ==========
+
+        function generateWordProblemsQuestion(difficulty) {
+            if (difficulty === 'easy') {
+                const apple = Math.floor(Math.random() * 10) + 5;
+                const give = Math.floor(Math.random() * (apple - 2)) + 1;
+                return {
+                    question: `Alex has ${apple} apples. If they give ${give} to Sam, how many apples does Alex have left?`,
+                    answer: apple - give,
+                    difficulty,
+                    hint: `Subtract ${give} from ${apple}.`
+                };
+            } else if (difficulty === 'medium') {
+                const cost = Math.floor(Math.random() * 5) + 3;
+                const count = Math.floor(Math.random() * 6) + 4;
+                const paid = 50;
+                const total = cost * count;
+                return {
+                    question: `If one book costs $${cost} and you buy ${count} books, how much change will you get from a $${paid} bill?`,
+                    answer: paid - total,
+                    difficulty,
+                    hint: `1. Multiply ${cost} × ${count}. 2. Subtract that from $${paid}.`
+                };
+            } else {
+                const speed = [40, 50, 60][Math.floor(Math.random() * 3)];
+                const hours = [2, 3, 4][Math.floor(Math.random() * 3)];
+                const headStart = 20;
+                return {
+                    question: `A cyclist travels at ${speed} km/h for ${hours} hours. If they started ${headStart} km ahead of the start line, what is their total distance from the start line?`,
+                    answer: (speed * hours) + headStart,
+                    difficulty,
+                    hint: `Distance = (Speed × Time) + Head Start.`
+                };
+            }
+        }
+
+        function generateTrigonometryQuestion(difficulty) {
+            if (difficulty === 'easy') {
+                // 8th-10th: Basic ratios
+                const angles = [30, 45, 60];
+                const angle = angles[Math.floor(Math.random() * 3)];
+                const trig = { 30: 0.5, 45: 0.707, 60: 0.866 };
+                return {
+                    question: `What is sin(${angle}°)? (Round to 3 decimal places)`,
+                    answer: trig[angle],
+                    difficulty,
+                    hint: `Think of the special right triangles.`
+                };
+            } else if (difficulty === 'medium') {
+                // 11th-12th: Radians and Identities
+                return {
+                    question: `Evaluate sin²(45°) + cos²(45°).`,
+                    answer: 1,
+                    difficulty,
+                    hint: `Remember the identity sin²θ + cos²θ = 1.`
+                };
+            } else {
+                // Undergrad: Calculus/Periodicity
+                const a = 3;
+                return {
+                    question: `Find the period of the function f(x) = sin(${a}x). (Give answer as 2π/k where k is...)`,
+                    answer: a,
+                    difficulty,
+                    hint: `The period of sin(ax) is 2π / |a|. Just enter the value of a.`
+                };
+            }
+        }
+
+        function generateExponentsQuestion(difficulty) {
+            if (difficulty === 'easy') {
+                const base = Math.floor(Math.random() * 10) + 1;
+                return {
+                    question: `What is the value of ${base}²?`,
+                    answer: base * base,
+                    difficulty,
+                    hint: `Multiply ${base} by itself.`
+                };
+            } else if (difficulty === 'medium') {
+                const powers = [2, 3, 4, 5];
+                const base = [2, 3, 5][Math.floor(Math.random() * 3)];
+                const exp = powers[Math.floor(Math.random() * (base === 2 ? 4 : 3))];
+                return {
+                    question: `What is ${base} to the power of ${exp}? (${base}^${exp})`,
+                    answer: Math.pow(base, exp),
+                    difficulty,
+                    hint: `Multiply ${base} by itself ${exp} times.`
+                };
+            } else {
+                const squares = [144, 169, 196, 225, 256, 400];
+                const s = squares[Math.floor(Math.random() * squares.length)];
+                return {
+                    question: `What is the square root of ${s}? (√${s})`,
+                    answer: Math.sqrt(s),
+                    difficulty,
+                    hint: `Which number multiplied by itself equals ${s}?`
+                };
+            }
+        }
+
+        function generateStatisticsQuestion(difficulty) {
+            if (difficulty === 'easy') {
+                const data = [10, 20, 30, 40, 50];
+                return {
+                    question: `Find the mean of the numbers: ${data.join(', ')}`,
+                    answer: 30,
+                    difficulty,
+                    hint: `Add them up and divide by ${data.length}`
+                };
+            } else if (difficulty === 'medium') {
+                // 11th-12th: Combinatorics
+                const n = 5;
+                const r = 2;
+                // 5C2 = 10
+                return {
+                    question: `In how many ways can you choose ${r} items from a set of ${n}? (5C2)`,
+                    answer: 10,
+                    difficulty,
+                    hint: `Use the formula n! / (r!(n-r)!)`
+                };
+            } else {
+                // Undergrad: Probability/Stats
+                const p = 0.5;
+                return {
+                    question: `If the probability of success is ${p}, what is the probability of 2 successes in 2 independent trials?`,
+                    answer: 0.25,
+                    difficulty,
+                    hint: `Multiply the probabilities: ${p} × ${p}`
+                };
+            }
+        }
+
+        function generatePreCalculusQuestion(difficulty) {
+            if (difficulty === 'easy') {
+                // 8th-10th: Functions
+                const x = 3;
+                return {
+                    question: `If f(x) = 2x + 5, what is f(${x})?`,
+                    answer: 2 * x + 5,
+                    difficulty,
+                    hint: `Substitute ${x} for x.`
+                };
+            } else if (difficulty === 'medium') {
+                // 11th-12th: Basic Derivatives
+                return {
+                    question: `What is the derivative of f(x) = x³? (Answer as 3x^k, just enter k)`,
+                    answer: 2,
+                    difficulty,
+                    hint: `Use the power rule: d/dx(x^n) = nx^(n-1).`
+                };
+            } else {
+                // Undergrad: Integration
+                return {
+                    question: `Find the definite integral of f(x) = 2x from x=0 to x=2.`,
+                    answer: 4,
+                    difficulty,
+                    hint: `Integrate 2x to get x². Evaluate at 2 and 0 then subtract.`
+                };
+            }
+        }
+
+        function generateRandomQuestion(difficulty) {
+            // Generate random arithmetic questions
+            const operations = ['+', '-', '×', '÷'];
+            const operation = operations[Math.floor(Math.random() * operations.length)];
+
+            switch (operation) {
+                case '+': return generateAdditionQuestion(difficulty);
+                case '-': return generateSubtractionQuestion(difficulty);
+                case '×': return generateMultiplicationQuestion(difficulty);
+                case '÷': return generateDivisionQuestion(difficulty);
+                default: return generateAdditionQuestion(difficulty);
+            }
+        }
+
+        // Comprehensive Math Question Bank
+        const mathQuestionBank = {
+            easy: [
+                // Basic Arithmetic
+                { question: "What is 15 + 27?", answer: 42, type: "text", hint: "Add the numbers" },
+                { question: "What is 50 - 18?", answer: 32, type: "text", hint: "Subtract 18 from 50" },
+                { question: "What is 8 × 7?", answer: 56, type: "text", hint: "Multiply 8 by 7" },
+                { question: "What is 48 ÷ 6?", answer: 8, type: "text", hint: "Divide 48 by 6" },
+
+                // Fractions
+                { question: "What is 1/2 + 1/4? (Answer as decimal)", answer: 0.75, type: "text", hint: "Convert to same denominator" },
+                { question: "What is 3/4 of 20?", answer: 15, type: "text", hint: "Multiply 20 by 3/4" },
+
+                // Percentages
+                { question: "What is 25% of 80?", answer: 20, type: "text", hint: "Multiply 80 by 0.25" },
+                { question: "What is 50% of 150?", answer: 75, type: "text", hint: "Half of 150" },
+
+                // Word Problems
+                { question: "Sarah has 12 apples. She gives 5 to her friend. How many does she have left?", answer: 7, type: "text", hint: "Subtract 5 from 12" },
+                { question: "A box has 6 rows of cookies with 4 cookies in each row. How many cookies in total?", answer: 24, type: "text", hint: "Multiply 6 by 4" },
+                { question: "Tom bought 3 pens for $2 each. How much did he spend in total?", answer: 6, type: "text", hint: "Multiply 3 by 2" },
+
+                // Simple Geometry
+                { question: "A square has sides of 5 cm. What is its perimeter in cm?", answer: 20, type: "text", hint: "Add all 4 sides" },
+                { question: "A rectangle is 6 cm long and 3 cm wide. What is its area in cm²?", answer: 18, type: "text", hint: "Multiply length by width" }
+            ],
+            medium: [
+                // Algebra
+                { question: "Solve for x: x + 15 = 32", answer: 17, type: "text", hint: "Subtract 15 from both sides" },
+                { question: "Solve for x: 3x = 27", answer: 9, type: "text", hint: "Divide both sides by 3" },
+                { question: "Solve for x: 2x + 5 = 21", answer: 8, type: "text", hint: "Subtract 5, then divide by 2" },
+                { question: "Solve for x: x/4 = 7", answer: 28, type: "text", hint: "Multiply both sides by 4" },
+
+                // Fractions & Ratios
+                { question: "What is 2/3 + 1/6? (Answer as decimal, round to 2 places)", answer: 0.83, type: "text", hint: "Find common denominator" },
+                { question: "Simplify the ratio 12:16 to lowest terms (answer as 3:X)", answer: 4, type: "text", hint: "Divide both by 4" },
+                { question: "If 3:5 is the ratio, and the first number is 12, what's the second?", answer: 20, type: "text", hint: "Scale up the ratio" },
+
+                // Percentages
+                { question: "What is 15% of 200?", answer: 30, type: "text", hint: "Multiply 200 by 0.15" },
+                { question: "A $80 item is discounted by 20%. What is the new price?", answer: 64, type: "text", hint: "Calculate 20% and subtract" },
+                { question: "72 is what percent of 120?", answer: 60, type: "text", hint: "Divide 72 by 120, multiply by 100" },
+
+                // Word Problems
+                { question: "A train travels 90 km in 2 hours. What is its speed in km/h?", answer: 45, type: "text", hint: "Divide distance by time" },
+                { question: "If 5 books cost $45, how much does 1 book cost?", answer: 9, type: "text", hint: "Divide total by quantity" },
+                { question: "A recipe needs 2.5 cups of flour for 10 cookies. How many cups for 20 cookies?", answer: 5, type: "text", hint: "Double the amount" },
+
+                // Geometry
+                { question: "A triangle has sides 5, 12, and 13 cm. What is its perimeter?", answer: 30, type: "text", hint: "Add all three sides" },
+                { question: "A circle has radius 7 cm. What is its diameter?", answer: 14, type: "text", hint: "Diameter = 2 × radius" }
+            ],
+            hard: [
+                // Advanced Algebra
+                { question: "Solve for x: 5x - 8 = 3x + 12", answer: 10, type: "text", hint: "Move x terms to one side" },
+                { question: "Solve for x: x² = 64 (positive answer)", answer: 8, type: "text", hint: "Square root of 64" },
+                { question: "Solve for x: 4(x + 3) = 36", answer: 6, type: "text", hint: "Distribute then solve" },
+                { question: "If f(x) = 2x + 5, what is f(7)?", answer: 19, type: "text", hint: "Substitute x=7" },
+
+                // Complex Fractions & Decimals
+                { question: "What is 3/4 ÷ 1/2? (Answer as decimal)", answer: 1.5, type: "text", hint: "Multiply by reciprocal" },
+                { question: "Calculate: (2.5 × 8) - 12", answer: 8, type: "text", hint: "Follow order of operations" },
+
+                // Advanced Percentages
+                { question: "A $150 item increased by 20%, then decreased by 20%. What's the final price?", answer: 144, type: "text", hint: "Calculate each change separately" },
+                { question: "Simple interest: Principal $500, Rate 6%, Time 3 years. Find interest.", answer: 90, type: "text", hint: "Use I = PRT/100" },
+
+                // Complex Word Problems
+                { question: "Two numbers sum to 45. One is 3 times the other. What is the smaller number?", answer: 11.25, type: "text", hint: "Set up equation: x + 3x = 45" },
+                { question: "A car travels 180 km at 60 km/h, then 120 km at 40 km/h. Total time in hours?", answer: 6, type: "text", hint: "Add time for each segment" },
+                { question: "Water fills tank at 15 L/min. Tank capacity 450 L. Time to fill in minutes?", answer: 30, type: "text", hint: "Divide capacity by rate" },
+                { question: "The average of 5 numbers is 24. Four numbers are 20, 22, 25, 28. What's the fifth?", answer: 25, type: "text", hint: "Total = 24 × 5" },
+
+                // Advanced Geometry
+                { question: "A rectangular garden is 15m long and 8m wide. What is its area in m²?", answer: 120, type: "text", hint: "Length × width" },
+                { question: "A cube has edge length 4 cm. What is its volume in cm³?", answer: 64, type: "text", hint: "Edge³" },
+                { question: "A right triangle has legs 6 and 8. What is the hypotenuse?", answer: 10, type: "text", hint: "Use Pythagorean theorem" }
+            ]
+        };
+
+        // Track used questions to prevent repetition
+        if (!window.usedMathQuestions) {
+            window.usedMathQuestions = { easy: [], medium: [], hard: [] };
+        }
+
+        function getUnusedQuestion(difficulty) {
+            const questions = mathQuestionBank[difficulty] || mathQuestionBank.easy;
+            const used = window.usedMathQuestions[difficulty];
+
+            // Reset if all questions have been used
+            if (used.length >= questions.length) {
+                window.usedMathQuestions[difficulty] = [];
+            }
+
+            // Find an unused question
+            const availableQuestions = questions.filter((_, index) => !used.includes(index));
+
+            if (availableQuestions.length === 0) {
+                window.usedMathQuestions[difficulty] = [];
+                return questions[Math.floor(Math.random() * questions.length)];
+            }
+
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            const selectedQuestion = availableQuestions[randomIndex];
+            const originalIndex = questions.indexOf(selectedQuestion);
+
+            used.push(originalIndex);
+
+            return { ...selectedQuestion, difficulty: difficulty };
+        }
+
+        function displayQuestion(question) {
+            const operand1 = document.getElementById('operand1');
+            const operator = document.getElementById('operator');
+            const operand2 = document.getElementById('operand2');
+            const answerInput = document.getElementById('answerInput');
+
+            if (question.type === 'text' || question.question) {
+                // For text-based questions (new topics), display the full question
+                if (operand1) {
+                    operand1.textContent = question.question || question.operand1;
+                    operand1.style.fontSize = '1.2rem';
+                    operand1.style.textAlign = 'center';
+                    operand1.style.padding = '10px';
+                }
+                if (operator) operator.textContent = '';
+                if (operand2) operand2.textContent = '';
+            } else {
+                // For traditional arithmetic questions
+                if (operand1 && operator && operand2) {
+                    operand1.textContent = question.operand1;
+                    operand1.style.fontSize = '';
+                    operand1.style.textAlign = '';
+                    operand1.style.padding = '';
+                    operator.textContent = question.operator;
+                    operand2.textContent = question.operand2;
+                }
+            }
+
+            if (answerInput) {
+                answerInput.type = question.answer_type === 'text' ? 'text' : 'number';
+                answerInput.value = '';
+                answerInput.placeholder = question.answer_type === 'text' ? 'Type answer...' : '?';
+                answerInput.focus();
+            } else {
+                console.error('Answer input element not found');
+            }
+        }
+
+        function updateDifficultyBadge(difficulty) {
+            const badge = document.getElementById('difficulty');
+            if (badge) {
+                badge.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+                badge.className = `difficulty-badge ${difficulty}`;
+            }
+        }
+
+        function submitAnswer() {
+            const userAnswerStr = document.getElementById('answerInput').value.trim();
+            const state = window.mathGameState;
+
+            if (!state) {
+                console.error('Game state not found');
+                return;
+            }
+
+            if (!userAnswerStr) {
+                showFeedback('Please enter an answer!', 'error');
+                return;
+            }
+
+            const correctAnswer = state.currentQuestion.answer;
+            let isCorrect = false;
+
+            // Handle different answer types
+            if (typeof correctAnswer === 'string') {
+                // Text answers (like >, <, =, fractions)
+                isCorrect = userAnswerStr.toLowerCase() === correctAnswer.toLowerCase();
+            } else {
+                // Numeric answers
+                const userAnswer = parseFloat(userAnswerStr);
+                if (isNaN(userAnswer)) {
+                    showFeedback('Please enter a valid answer!', 'error');
+                    return;
+                }
+                // Check with tolerance for decimals
+                isCorrect = Math.abs(userAnswer - correctAnswer) < 0.01;
+            }
+            state.questionsAnswered++;
+
+            if (isCorrect) {
+                state.correctAnswers++;
+                state.streak++;
+                const points = calculatePoints(state.currentQuestion.difficulty, state.streak);
+                state.score += points;
+
+                showFeedback(`Correct! +${points} points (Streak: ${state.streak})`, 'success');
+                playSound('correct');
+
+                // Submit detailed progress to backend
+                const questionText = state.currentQuestion.question ||
+                    `${state.currentQuestion.operand1} ${state.currentQuestion.operator} ${state.currentQuestion.operand2}`;
+
+                if (window.ACEBackend && window.ACEBackend.submitDetailedProgress) {
+                    window.ACEBackend.submitDetailedProgress(
+                        'math',
+                        questionText,
+                        userAnswerStr,
+                        true,
+                        points
+                    );
+                }
+
+                // Check for achievements
+                checkAchievements();
+            } else {
+                state.streak = 0;
+                showFeedback(`Wrong! The answer was ${state.currentQuestion.answer}`, 'error');
+                playSound('incorrect');
+
+                // Submit detailed progress to backend for incorrect answer
+                const questionText = state.currentQuestion.question ||
+                    `${state.currentQuestion.operand1} ${state.currentQuestion.operator} ${state.currentQuestion.operand2}`;
+
+                if (window.ACEBackend && window.ACEBackend.submitDetailedProgress) {
+                    window.ACEBackend.submitDetailedProgress(
+                        'math',
+                        questionText,
+                        userAnswerStr,
+                        false,
+                        0
+                    );
+                }
+
+                if (state.mode === 'survival') {
+                    endGame('Game Over! You answered incorrectly.');
+                    return;
+                }
+            }
+
+            updateGameStats();
+            nextQuestion();
+        }
+
+        function calculatePoints(difficulty, streak) {
+            let basePoints = 10;
+
+            // Difficulty multiplier
+            switch (difficulty) {
+                case 'easy': basePoints = 10; break;
+                case 'medium': basePoints = 20; break;
+                case 'hard': basePoints = 30; break;
+            }
+
+            // Streak bonus
+            const streakBonus = Math.floor(streak / 3) * 5;
+
+            return basePoints + streakBonus;
+        }
+
+        function showHint() {
+            const state = window.mathGameState;
+            if (!state || !state.currentQuestion) {
+                console.error('Game state or current question not found');
+                return;
+            }
+
+            const question = state.currentQuestion;
+
+            // Deduct points for using hint
+            state.score = Math.max(0, state.score - 10);
+
+            let hint = '';
+
+            if (question.hint) {
+                hint = question.hint;
+            } else if (question.type === 'text' && question.hint) {
+                hint = question.hint;
+            } else if (question.operator) {
+                switch (question.operator) {
+                    case '+':
+                        hint = `Think: ${question.operand1} plus ${question.operand2} equals...`;
+                        break;
+                    case '-':
+                        hint = `Think: ${question.operand1} minus ${question.operand2} equals...`;
+                        break;
+                    case '×':
+                        hint = `Think: ${question.operand1} times ${question.operand2} equals...`;
+                        break;
+                    case '÷':
+                        hint = `Think: ${question.operand1} divided by ${question.operand2} equals...`;
+                        break;
+                }
+            }
+
+            showFeedback(`💡 Hint: ${hint} (-10 points)`, 'hint');
+            updateGameStats();
+        }
+
+        function skipQuestion() {
+            const state = window.mathGameState;
+            if (!state) {
+                console.error('Game state not found');
+                return;
+            }
+
+            state.score = Math.max(0, state.score - 5);
+            showFeedback('Question skipped! (-5 points)', 'warning');
+            updateGameStats();
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            const state = window.mathGameState;
+            if (!state) {
+                console.error('Game state not found');
+                return;
+            }
+
+            state.questionNum++;
+
+            if (state.mode === 'survival') {
+                // Survival mode continues indefinitely
+                generateQuestion();
+            } else if (state.questionNum > state.totalQuestions) {
+                endGame('Congratulations! You completed all questions!');
+            } else {
+                generateQuestion();
+            }
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const state = window.mathGameState;
+            if (!state) return;
+
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+
+            if (!progressFill || !progressText) return;
+
+            const progress = state.mode === 'survival' ?
+                Math.min(100, (state.questionsAnswered / 10) * 100) :
+                (state.questionNum - 1) / state.totalQuestions * 100;
+
+            progressFill.style.width = progress + '%';
+            progressText.textContent =
+                state.mode === 'survival' ?
+                    `${state.questionsAnswered} questions` :
+                    `${state.questionNum - 1}/${state.totalQuestions}`;
+        }
+
+        function updateGameStats() {
+            const state = window.mathGameState;
+            if (!state) return;
+
+            const scoreElement = document.getElementById('score');
+            const streakElement = document.getElementById('streak');
+            const levelElement = document.getElementById('level');
+            const questionNumElement = document.getElementById('questionNum');
+
+            if (scoreElement) scoreElement.textContent = state.score;
+            if (streakElement) streakElement.textContent = state.streak;
+            if (levelElement) levelElement.textContent = state.level;
+            if (questionNumElement) questionNumElement.textContent = state.questionNum;
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            if (feedback) {
+                feedback.textContent = message;
+                feedback.className = `feedback ${type}`;
+
+                setTimeout(() => {
+                    feedback.textContent = '';
+                    feedback.className = 'feedback';
+                }, 3000);
+            }
+        }
+
+        function checkAchievements() {
+            const state = window.mathGameState;
+            if (!state) return;
+
+            // Streak achievements
+            if (state.streak === 5) {
+                showFeedback('🏆 Achievement Unlocked: Streak Master!', 'achievement');
+            } else if (state.streak === 10) {
+                showFeedback('🏆 Achievement Unlocked: Streak Legend!', 'achievement');
+            }
+
+            // Score achievements
+            if (state.score >= 100) {
+                showFeedback('🏆 Achievement Unlocked: Centurion!', 'achievement');
+            } else if (state.score >= 500) {
+                showFeedback('🏆 Achievement Unlocked: Math Champion!', 'achievement');
+            }
+        }
+
+        function endGame(message) {
+            const state = window.mathGameState;
+            if (!state) return;
+
+            // Clear timer if exists
+            if (state.timer) {
+                clearInterval(state.timer);
+            }
+
+            // Calculate final stats
+            const accuracy = state.questionsAnswered > 0 ?
+                Math.round((state.correctAnswers / state.questionsAnswered) * 100) : 0;
+            const timeElapsed = Math.round((Date.now() - state.startTime) / 1000);
+
+            const gameContent = document.getElementById('gameContent');
+            if (gameContent) {
+                gameContent.innerHTML = `
+                    <div class="game-end">
+                        <h2>${message}</h2>
+                        <div class="final-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Final Score</span>
+                                <span class="stat-value">${state.score}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Accuracy</span>
+                                <span class="stat-value">${accuracy}%</span>
+                                </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Questions</span>
+                                <span class="stat-value">${state.questionsAnswered}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Time</span>
+                                <span class="stat-value">${timeElapsed}s</span>
+                            </div>
+                        </div>
+                        <div class="game-actions">
+                            <button class="control-btn" onclick="loadMathGame('${state.mode}')">Play Again</button>
+                            <button class="control-btn" onclick="closeGameModal()">Back to Menu</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateGameSettings() {
+            const operationType = document.getElementById('operationType');
+            const difficulty = document.getElementById('difficultyLevel');
+
+            if (operationType && difficulty && window.mathGameState) {
+                window.mathGameState.operationType = operationType.value;
+                window.mathGameState.difficulty = difficulty.value;
+
+                // Generate new question with updated settings
+                generateQuestion();
+            }
+        }
+
+        function playSound(type) {
+            // Placeholder for sound effects
+            // In a real implementation, you would load and play audio files
+            console.log(`Playing ${type} sound`);
+        }
+
+        // Test function for quick testing
+        function testGameMode(mode) {
+            console.log('Testing game mode:', mode);
+            try {
+                startMathGame(mode);
+            } catch (error) {
+                console.error('Error testing game mode:', error);
+                alert('Error testing game mode. Please try again.');
+            }
+        }
+
+        // Global error handler
+        window.addEventListener('error', function (e) {
+            console.error('Global error:', e.error);
+        });
+
+        // Clear timers when page is unloaded
+        window.addEventListener('beforeunload', function () {
+            if (window.mathGameState && window.mathGameState.timer) {
+                clearInterval(window.mathGameState.timer);
+                console.log('Cleared timer on page unload');
+            }
+        });
+
+        console.log('Math game script loaded successfully');
+    </script>
+</body>
+
+</html>
