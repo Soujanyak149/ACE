@@ -75,7 +75,8 @@ def create_app():
     
     db_path = os.path.join(instance_path, 'ace.db')
     # Force use of SQLite for local development and simplicity
-    sqlite_uri = f'sqlite:///{os.path.abspath(db_path).replace("\\", "/")}'
+    abs_db_path = os.path.abspath(db_path).replace("\\", "/")
+    sqlite_uri = f'sqlite:///{abs_db_path}'
     
     # We'll stick to SQLite for now to solve the 'psycopg' module error
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('ACE_FORCED_DB_URI', sqlite_uri)
