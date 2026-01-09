@@ -439,13 +439,14 @@ async function registerUser(email, password, name = '') {
             console.log('User registered successfully');
             return data;
         } else {
-            const error = await response.json();
-            console.error('Registration failed:', error.error);
-            return null;
+            const errorData = await response.json().catch(() => ({ error: 'Unknown server error' }));
+            const errorMsg = errorData.error || 'Registration failed';
+            console.error('Registration failed:', errorMsg);
+            throw new Error(errorMsg);
         }
     } catch (error) {
         console.error('Error registering user:', error);
-        return null;
+        throw error;
     }
 }
 
@@ -467,13 +468,14 @@ async function loginUser(email, password) {
             console.log('User logged in successfully');
             return data;
         } else {
-            const error = await response.json();
-            console.error('Login failed:', error.error);
-            return null;
+            const errorData = await response.json().catch(() => ({ error: 'Invalid credentials' }));
+            const errorMsg = errorData.error || 'Login failed';
+            console.error('Login failed:', errorMsg);
+            throw new Error(errorMsg);
         }
     } catch (error) {
         console.error('Error logging in user:', error);
-        return null;
+        throw error;
     }
 }
 
@@ -1761,28 +1763,35 @@ async function handleLogin() {
     } catch (e) { }
 
     // Use Flask Backend (SQLite)
-    const result = await ACEBackend.loginUser(email, password);
-
-    // Hide loading
     try {
-        if (LoadingManager && LoadingManager.hide) LoadingManager.hide();
-    } catch (e) { }
+        const result = await ACEBackend.loginUser(email, password);
 
-    if (result) {
-        // Login successful
-        localStorage.setItem('ace_user_email', result.email);
-        localStorage.setItem('ace_user_name', result.name);
-        setCurrentUserId(result.user_id);
+        // Hide loading
+        try {
+            if (LoadingManager && LoadingManager.hide) LoadingManager.hide();
+        } catch (e) { }
 
-        closeAuthModal();
-        updateAuthUI();
-        ErrorHandler.showSuccess('✅ Login successful!');
+        if (result) {
+            // Login successful
+            localStorage.setItem('ace_user_email', result.email);
+            localStorage.setItem('ace_user_name', result.name);
+            setCurrentUserId(result.user_id);
 
-        // Sync API progress if needed or reload
-        setTimeout(() => location.reload(), 500);
-    } else {
-        alert('❌ Login failed. Please check your credentials.');
-        ErrorHandler.showError('❌ Login failed. Please check your credentials.');
+            closeAuthModal();
+            updateAuthUI();
+            ErrorHandler.showSuccess('✅ Login successful!');
+
+            // Sync API progress if needed or reload
+            setTimeout(() => location.reload(), 500);
+        }
+    } catch (error) {
+        // Hide loading
+        try {
+            if (LoadingManager && LoadingManager.hide) LoadingManager.hide();
+        } catch (e) { }
+
+        alert(`❌ Login failed: ${error.message}`);
+        ErrorHandler.showError(`❌ Login failed: ${error.message}`);
     }
 }
 
@@ -1814,29 +1823,36 @@ async function handleRegister() {
     } catch (e) { }
 
     // Use Flask Backend (SQLite)
-    const result = await ACEBackend.registerUser(email, password, name);
-
-    // Hide loading
     try {
-        if (LoadingManager && LoadingManager.hide) LoadingManager.hide();
-    } catch (e) { }
+        const result = await ACEBackend.registerUser(email, password, name);
 
-    if (result) {
-        // Registration successful
-        alert('✅ Account created successfully! Logging you in...');
-        ErrorHandler.showSuccess('✅ Account created successfully!');
+        // Hide loading
+        try {
+            if (LoadingManager && LoadingManager.hide) LoadingManager.hide();
+        } catch (e) { }
 
-        // Auto login
-        localStorage.setItem('ace_user_email', result.email);
-        localStorage.setItem('ace_user_name', result.name);
-        setCurrentUserId(result.user_id);
+        if (result) {
+            // Registration successful
+            alert('✅ Account created successfully! Logging you in...');
+            ErrorHandler.showSuccess('✅ Account created successfully!');
 
-        closeAuthModal();
-        updateAuthUI();
-        setTimeout(() => location.reload(), 500);
-    } else {
-        alert('❌ Registration failed. Email might already be taken.');
-        ErrorHandler.showError('❌ Registration failed.');
+            // Auto login
+            localStorage.setItem('ace_user_email', result.email);
+            localStorage.setItem('ace_user_name', result.name);
+            setCurrentUserId(result.user_id);
+
+            closeAuthModal();
+            updateAuthUI();
+            setTimeout(() => location.reload(), 500);
+        }
+    } catch (error) {
+        // Hide loading
+        try {
+            if (LoadingManager && LoadingManager.hide) LoadingManager.hide();
+        } catch (e) { }
+
+        alert(`❌ Registration failed: ${error.message}`);
+        ErrorHandler.showError(`❌ Registration failed: ${error.message}`);
     }
 }
 

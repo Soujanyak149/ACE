@@ -490,12 +490,6 @@
                 <h2 class="auth-title">✨ Create Account</h2>
                 <p class="auth-subtitle">Join thousands of learners!</p>
 
-                <!-- DEBUG: Test button -->
-                <button onclick="alert('Button clicked! JS is working!'); console.log('Test button clicked');"
-                    style="margin-bottom: 10px; background: orange;">
-                    🧪 Test Button (Click Me First!)
-                </button>
-
                 <div class="form-group">
                     <label>Name</label>
                     <input type="text" id="registerName" placeholder="Your Name" required>
@@ -511,8 +505,7 @@
                     <input type="password" id="registerPassword" placeholder="••••••••" required>
                 </div>
 
-                <button onclick="alert('Create Account clicked!'); handleRegister();" class="auth-btn primary-btn"
-                    type="button">
+                <button onclick="handleRegister()" class="auth-btn primary-btn" type="button">
                     <i class="fas fa-user-plus"></i> Create Account
                 </button>
 
