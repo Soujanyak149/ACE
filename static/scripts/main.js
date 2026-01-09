@@ -434,18 +434,18 @@ async function registerUser(email, password, name = '') {
             })
         });
 
+        const data = await response.json().catch(() => ({}));
+
         if (response.ok) {
-            const data = await response.json();
             console.log('User registered successfully');
             return data;
         } else {
-            const error = await response.json();
-            console.error('Registration failed:', error.error);
-            return null;
+            console.error('Registration failed:', data.error || 'Unknown error');
+            return { error: data.error || data.details || 'Registration failed' };
         }
     } catch (error) {
         console.error('Error registering user:', error);
-        return null;
+        return { error: 'Connection failed' };
     }
 }
 
@@ -1821,7 +1821,7 @@ async function handleRegister() {
         if (LoadingManager && LoadingManager.hide) LoadingManager.hide();
     } catch (e) { }
 
-    if (result) {
+    if (result && !result.error) {
         // Registration successful
         alert('✅ Account created successfully! Logging you in...');
         ErrorHandler.showSuccess('✅ Account created successfully!');
@@ -1835,8 +1835,9 @@ async function handleRegister() {
         updateAuthUI();
         setTimeout(() => location.reload(), 500);
     } else {
-        alert('❌ Registration failed. Email might already be taken.');
-        ErrorHandler.showError('❌ Registration failed.');
+        const msg = (result && result.error) ? result.error : 'Registration failed. Email might already be taken.';
+        alert(`❌ ${msg}`);
+        ErrorHandler.showError(`❌ ${msg}`);
     }
 }
 
