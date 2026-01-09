@@ -90,12 +90,17 @@ def create_app():
     
     CORS(app, resources={r"/api/*": {"origins": cors_origins}})
     db.init_app(app)
+    
+    # Fix for Eventlet/SQLAlchemy threading issues on Render/SQLite
+    from sqlalchemy.pool import NullPool
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'poolclass': NullPool}
+    
     init_db(app)
     return app
 
 
 app = create_app()
-socketio = SocketIO(app, cors_allowed_origins='*')
+socketio = SocketIO(app, cors_allowed_origins='*', async_mode='eventlet')
 
 
 def _get_bearer_token():
@@ -207,71 +212,61 @@ def health_check():
 # --------------------- AUTH ---------------------
 @app.post('/api/auth/register')
 def register():
+    data = request.get_json(force=True) or {}
+
+    validated_data, errors = validate_request_data(UserRegistrationSchema, data)
+    if errors:
+        return jsonify({'error': 'Validation failed', 'details': errors}), 400
+
+    email = (validated_data.get('email') or '').strip().lower()
+    name = (validated_data.get('name') or '').strip()
+    password = validated_data.get('password') or ''
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({'error': 'Email already registered'}), 409
+
     try:
-        data = request.get_json(force=True) or {}
-        
-        email = data.get('email', '').strip().lower()
-        password = data.get('password', '')
-        name = data.get('name', '').strip()
-
-        if not email or not password:
-            return jsonify({'error': 'Email and password are required'}), 400
-        
-        if len(password) < 6:
-            return jsonify({'error': 'Password must be at least 6 characters'}), 400
-
-        # Check if email exists
-        if User.query.filter_by(email=email).first():
-            return jsonify({'error': 'Email already registered'}), 409
-
-        # Create user
         user = User(
             email=email,
-            name=name if name else email.split('@')[0],
+            name=name or email.split('@')[0],
             password_hash=generate_password_hash(password),
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
         )
-        
         db.session.add(user)
         db.session.commit()
-        
         return jsonify({
-            'message': 'Registered successfully',
+            'message': 'Registered',
             'user_id': user.id,
             'email': user.email,
-            'name': user.name
-        }), 201
-
+            'name': user.name,
+        })
     except Exception as e:
         db.session.rollback()
-        print(f"❌ Error during registration: {str(e)}")
-        return jsonify({'error': f'Registration failed: {str(e)}'}), 500
+        print(f"Error registering user: {e}")
+        return jsonify({'error': 'Failed to register user'}), 500
 
 
 @app.post('/api/auth/login')
 def login():
-    try:
-        data = request.get_json(force=True) or {}
-        email = data.get('email', '').strip().lower()
-        password = data.get('password', '')
+    data = request.get_json(force=True) or {}
 
-        if not email or not password:
-            return jsonify({'error': 'Email and password are required'}), 400
+    validated_data, errors = validate_request_data(UserLoginSchema, data)
+    if errors:
+        return jsonify({'error': 'Validation failed', 'details': errors}), 400
 
-        user = User.query.filter_by(email=email).first()
-        
-        if not user or not user.password_hash or not check_password_hash(user.password_hash, password):
-            return jsonify({'error': 'Invalid email or password'}), 401
+    email = (validated_data.get('email') or '').strip().lower()
+    password = validated_data.get('password') or ''
 
-        return jsonify({
-            'message': 'Logged in successfully',
-            'user_id': user.id,
-            'email': user.email,
-            'name': user.name
-        }), 200
-    except Exception as e:
-        print(f"❌ Error during login: {str(e)}")
-        return jsonify({'error': 'Login error occurred'}), 500
+    user = User.query.filter_by(email=email).first()
+    if not user or not user.password_hash or not check_password_hash(user.password_hash, password):
+        return jsonify({'error': 'Invalid credentials'}), 401
+
+    return jsonify({
+        'message': 'Logged in',
+        'user_id': user.id,
+        'email': user.email,
+        'name': user.name,
+    })
 
 
 @app.get('/api/auth/me')
