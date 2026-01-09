@@ -59,7 +59,7 @@ const isLocal = window.location.hostname === 'localhost'
 //
 const API_BASE_URL = isLocal
     ? 'http://localhost:5000/api'
-    : 'https://your-production-api.com/api'; // 👈 CHANGE THIS!
+    : window.location.origin + '/api';
 
 console.log('🌐 Environment detected:', isLocal ? 'Local' : 'Production');
 console.log('📡 API Base URL:', API_BASE_URL);
