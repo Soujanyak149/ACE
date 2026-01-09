@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, join_room, leave_room
@@ -91,9 +94,12 @@ def create_app():
     CORS(app, resources={r"/api/*": {"origins": cors_origins}})
     db.init_app(app)
     
-    # Fix for Eventlet/SQLAlchemy threading issues on Render/SQLite
-    from sqlalchemy.pool import NullPool
-    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'poolclass': NullPool}
+    # Fix for Eventlet/SQLite threading issues on Render
+    from sqlalchemy.pool import StaticPool
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'poolclass': StaticPool,
+        'connect_args': {'check_same_thread': False}
+    }
     
     init_db(app)
     return app
