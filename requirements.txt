@@ -8,7 +8,8 @@ Werkzeug==2.3.7
 # SocketIO runtime
 python-socketio==5.8.0
 python-engineio==4.7.1
-eventlet==0.33.3
+eventlet==0.36.1
+setuptools
 
 # Server
 gunicorn==21.2.0
@@ -17,3 +18,4 @@ gunicorn==21.2.0
 marshmallow==3.20.1
 python-dotenv==1.0.0
 PyJWT==2.8.0
+
