@@ -487,47 +487,126 @@ def leaderboard_top():
 
 # -------------- QUIZ BATTLE SOCKETS -------------
 rooms_waiting = []
-
+active_rooms = {}  # room_id -> { 'players': [], 'state': 'waiting' }
 
 @socketio.on('connect')
 def on_connect():
     emit('connected', {'message': 'connected'})
 
+@socketio.on('disconnect')
+def on_disconnect():
+    # Remove user from waiting list if present
+    if request.sid in rooms_waiting:
+        rooms_waiting.remove(request.sid)
+    
+    # Handle disconnection from active rooms
+    for room_code, room_data in list(active_rooms.items()):
+        if request.sid in room_data['players']:
+            room_data['players'].remove(request.sid)
+            if not room_data['players']:
+                 del active_rooms[room_code]
+            else:
+                 emit('player_left', {'message': 'Opponent disconnected'}, room=room_code)
 
 @socketio.on('join_lobby')
 def on_join_lobby(data):
     user = (data or {}).get('user', 'guest')
-    rooms_waiting.append(request.sid)
+    if request.sid not in rooms_waiting:
+        rooms_waiting.append(request.sid)
     emit('lobby_joined', {'you': user, 'waiting': len(rooms_waiting)})
 
+@socketio.on('create_private_room')
+def on_create_private_room(data):
+    import random, string
+    room_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    
+    join_room(room_code)
+    active_rooms[room_code] = {
+        'players': [request.sid],
+        'player_names': {request.sid: data.get('username', 'Player 1')},
+        'state': 'waiting'
+    }
+    
+    emit('private_room_created', {'room': room_code})
+
+@socketio.on('join_private_room')
+def on_join_private_room(data):
+    room_code = data.get('room')
+    username = data.get('username', 'Player 2')
+    
+    if room_code in active_rooms:
+        room_data = active_rooms[room_code]
+        
+        if len(room_data['players']) >= 2:
+            emit('error', {'message': 'Room is full'})
+            return
+
+        join_room(room_code)
+        room_data['players'].append(request.sid)
+        room_data['player_names'][request.sid] = username
+        
+        # Notify everyone in the room
+        emit('player_joined', {
+            'room': room_code,
+            'players': list(room_data['player_names'].values())
+        }, room=room_code)
+        
+        if len(room_data['players']) == 2:
+            room_data['state'] = 'ready'
+            emit('game_ready', {'room': room_code}, room=room_code)
+            
+    else:
+        emit('error', {'message': 'Room not found'})
 
 @socketio.on('matchmake')
 def on_matchmake(data):
+    # Determine the current user's socket ID
+    current_sid = request.sid
+
+    if current_sid in rooms_waiting:
+        # Already waiting, don't add again
+        pass
+    else:
+        rooms_waiting.append(current_sid)
+    
     if len(rooms_waiting) >= 2:
-        a = rooms_waiting.pop(0)
-        b = rooms_waiting.pop(0)
-        room = f"room:{a[:5]}:{b[:5]}"
-        join_room(room, sid=a)
-        join_room(room, sid=b)
+        # Avoid matching with self if something went wrong, though list should be unique
+        p1 = rooms_waiting.pop(0)
+        p2 = rooms_waiting.pop(0)
+        
+        if p1 == p2: # Should not happen but safety check
+            rooms_waiting.append(p1)
+            return
+
+        room = f"room_{p1[:4]}_{p2[:4]}"
+        
+        join_room(room, sid=p1)
+        join_room(room, sid=p2)
+        
+        active_rooms[room] = {
+            'players': [p1, p2],
+             'player_names': {p1: 'Player 1', p2: 'Player 2'},
+            'state': 'playing'
+        }
+        
         socketio.emit('match_found', {'room': room}, room=room)
     else:
         emit('waiting', {'message': 'waiting for opponent'})
-
-
-@socketio.on('join_room')
-def on_join_room(data):
-    room = data.get('room')
-    if room:
-        join_room(room)
-        emit('room_joined', {'room': room}, room=room)
-
 
 @socketio.on('chat_message')
 def on_chat_message(data):
     room = data.get('room')
     msg = data.get('message')
+    sender = data.get('sender', 'Unknown')
     if room and msg:
-        emit('chat_message', {'message': msg}, room=room)
+        emit('chat_message', {'message': msg, 'sender': sender}, room=room)
+
+@socketio.on('submit_answer')
+def on_submit_answer(data):
+    # Relay progress/answer to the opponent
+    room = data.get('room')
+    if room:
+        emit('opponent_progress', data, room=room, include_self=False)
 
 
 # ------------------ PAGE ROUTES (CLEAN URLs) ------------------

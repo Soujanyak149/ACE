@@ -1212,24 +1212,92 @@
 
         function initializeBattleGame(mode) {
             console.log('Initializing battle game for mode:', mode);
-
-            // Initialize socket connection (simulated for demo)
             initializeSocket();
-
-            // Set up event listeners
             setupEventListeners();
-
             console.log('Battle game initialized successfully');
         }
 
         function initializeSocket() {
-            // Simulate socket connection for demo
-            console.log('Connecting to battle server...');
+            if (socket && socket.connected) return; // Already initialized
 
-            // Simulate connection success
-            setTimeout(() => {
+            console.log('Connecting to battle server with Socket.IO...');
+
+            // Allow socket to connect generally
+            socket = io();
+
+            socket.on('connect', () => {
                 showFeedback('Connected to battle server!', 'success');
-            }, 1000);
+                // Join the lobby for matchmaking updates if needed
+                socket.emit('join_lobby', { user: 'User' });
+            });
+
+            socket.on('private_room_created', (data) => {
+                battleState.room = data.room;
+                battleState.player = 'p1';
+
+                const lobbyContainer = document.getElementById('lobbyContainer');
+                const battleRoom = document.getElementById('battleRoom');
+                const roomCodeElement = document.getElementById('roomCode');
+                const opponentStatus = document.getElementById('opponentStatus');
+                const opponentName = document.getElementById('opponentName');
+
+                if (lobbyContainer && battleRoom && roomCodeElement) {
+                    lobbyContainer.style.display = 'none';
+                    battleRoom.style.display = 'block';
+                    roomCodeElement.textContent = data.room;
+
+                    if (opponentStatus) opponentStatus.textContent = 'Waiting for joiner...';
+                    if (opponentName) opponentName.textContent = 'Waiting...';
+                }
+                showFeedback(`Room created! Code: ${data.room}`, 'success');
+            });
+
+            socket.on('player_joined', (data) => {
+                // Someone joined the private room
+                const opponentStatus = document.getElementById('opponentStatus');
+                const opponentName = document.getElementById('opponentName');
+                const opponentCard = document.getElementById('opponentCard');
+
+                if (opponentStatus) opponentStatus.textContent = 'Connected';
+                if (opponentName) opponentName.textContent = 'Player 2';
+                if (opponentCard) opponentCard.classList.add('ready');
+
+                showFeedback('Opponent joined!', 'success');
+            });
+
+            socket.on('game_ready', (data) => {
+                // Both players present, start game
+                showFeedback('Game starting in 3 seconds...', 'success');
+                setTimeout(() => {
+                    startBattle();
+                }, 3000);
+            });
+
+            socket.on('opponent_progress', (data) => {
+                // Update opponent score visualization
+                if (data.score_earned > 0) {
+                    battleState.opponentScore += data.score_earned;
+                    const opponentScoreElement = document.getElementById('opponentScore');
+                    if (opponentScoreElement) opponentScoreElement.textContent = battleState.opponentScore;
+                    showFeedback('Opponent scored!', 'info');
+                }
+            });
+
+            socket.on('chat_message', (data) => {
+                const chatMessages = document.getElementById('chatMessages');
+                if (chatMessages) {
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'chat-message';
+                    const sender = data.sender === battleState.player ? 'You' : (data.sender || 'Opponent');
+                    messageElement.textContent = `${sender}: ${data.message}`;
+                    chatMessages.appendChild(messageElement);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            });
+
+            socket.on('error', (data) => {
+                showFeedback(data.message || 'Error occurred', 'error');
+            });
         }
 
         function setupEventListeners() {
@@ -1251,35 +1319,47 @@
             if (lobbyStatus && loadingSpinner) {
                 lobbyStatus.textContent = 'Searching for opponents...';
                 loadingSpinner.style.display = 'block';
-
-                // Simulate finding opponent
-                setTimeout(() => {
-                    lobbyStatus.textContent = 'Opponent found! Starting battle...';
-                    setTimeout(() => {
-                        startBattle();
-                    }, 2000);
-                }, 3000);
+                // Emit matchmake event
+                if (socket) socket.emit('matchmake');
             }
         }
 
         function createPrivateRoom() {
-            const roomCode = generateRoomCode();
-            battleState.room = roomCode;
-
-            // Show room interface
-            showBattleRoom(roomCode);
-
-            showFeedback(`Private room created! Room code: ${roomCode}`, 'info');
+            if (!socket) return;
+            // Get username from somewhere if possible, or use default
+            const username = 'Player 1';
+            socket.emit('create_private_room', { username: username });
+            showFeedback('Creating private room...', 'info');
         }
 
         function joinRoom() {
+            if (!socket) return;
             const roomCode = prompt('Enter room code:');
             if (roomCode && roomCode.length === 6) {
+                const username = 'Player 2';
+                socket.emit('join_private_room', { room: roomCode, username: username });
                 battleState.room = roomCode;
-                showBattleRoom(roomCode);
-                showFeedback(`Joining room: ${roomCode}`, 'info');
+                battleState.player = 'p2';
+
+                // Optimistic UI update
+                showFeedback(`Joining room: ${roomCode}...`, 'info');
+
+                // The actual UI update happens on 'private_room_joined' or 'player_joined' if I added it, 
+                // but since I only added 'player_joined' and 'game_ready' on server for p2 context, 
+                // I rely on server sending success/error.
+                // However, let's just show the waiting screen optimistically so they see "Connecting..."
+
+                const lobbyContainer = document.getElementById('lobbyContainer');
+                const battleRoom = document.getElementById('battleRoom');
+                const roomCodeElement = document.getElementById('roomCode');
+
+                if (lobbyContainer && battleRoom && roomCodeElement) {
+                    lobbyContainer.style.display = 'none';
+                    battleRoom.style.display = 'block';
+                    roomCodeElement.textContent = roomCode;
+                }
             } else {
-                showFeedback('Invalid room code!', 'error');
+                showFeedback('Invalid room code! Must be 6 characters.', 'error');
             }
         }
 
@@ -1301,18 +1381,15 @@
 
         function sendMessage() {
             const chatInput = document.getElementById('chatInput');
-            const chatMessages = document.getElementById('chatMessages');
 
-            if (chatInput && chatMessages && chatInput.value.trim()) {
+            if (chatInput && chatInput.value.trim() && battleState.room) {
                 const message = chatInput.value.trim();
-                const messageElement = document.createElement('div');
-                messageElement.className = 'chat-message';
-                messageElement.textContent = `You: ${message}`;
-                chatMessages.appendChild(messageElement);
+                socket.emit('chat_message', {
+                    room: battleState.room,
+                    message: message,
+                    sender: battleState.player
+                });
                 chatInput.value = '';
-
-                // Scroll to bottom
-                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         }
 
@@ -1499,6 +1576,16 @@
                 );
             }
 
+            // Send progress to opponent via Socket.IO
+            if (socket && battleState.room) {
+                socket.emit('submit_answer', {
+                    room: battleState.room,
+                    score_earned: points,
+                    is_correct: isCorrect,
+                    user_answer: answer
+                });
+            }
+
             // Update scores
             updateScores();
 
@@ -1572,13 +1659,7 @@
             if (playerScoreElement) {
                 playerScoreElement.textContent = battleState.score;
             }
-
-            // Simulate opponent score (random for demo)
-            battleState.opponentScore = Math.floor(Math.random() * (battleState.score + 20));
-            const opponentScoreElement = document.getElementById('opponentScore');
-            if (opponentScoreElement) {
-                opponentScoreElement.textContent = battleState.opponentScore;
-            }
+            // Opponent score is updated via socket events
         }
 
         function endBattle() {
