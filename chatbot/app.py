@@ -15,7 +15,7 @@ CORS(app)  # Enable CORS for all routes
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', "AIzaSyCLWSXsX7et8NMp00MssPHcMlZ7EMAA_8c")
 if not GEMINI_API_KEY or "your_gemini_api_key" in GEMINI_API_KEY:
     # If not in env or if it's the placeholder, use the hardcoded one
-    GEMINI_API_KEY = "AIzaSyCLWSXsX7et8NMp00MssPHcMlZ7EMAA_8c"
+    GEMINI_API_KEY = "AIzaSyDpW7V0IVuN8imTxJq2IPzkzzzAJ8NCJ9s"
 
 # Initialize the client + model
 GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash')
