@@ -19,14 +19,22 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Configure Gemini API
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', "AIzaSyCLWSXsX7et8NMp00MssPHcMlZ7EMAA_8c")
+# Configure Gemini API
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+
 if not GEMINI_API_KEY or "your_gemini_api_key" in GEMINI_API_KEY:
-    # If not in env or if it's the placeholder, use the hardcoded one
-    GEMINI_API_KEY = "AIzaSyDpW7V0IVuN8imTxJq2IPzkzzzAJ8NCJ9s"
+    print("Error: GEMINI_API_KEY not found in environment variables.")
+    print("Please create a .env file in the chatbot directory with GEMINI_API_KEY=your_new_key")
+    # Don't use a fallback that might be leaked. Let it fail or use a placeholder that will error cleanly.
+    GEMINI_API_KEY = None
 
 # Initialize the client + model
 GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash')
-client = genai.Client(api_key=GEMINI_API_KEY)
+
+if GEMINI_API_KEY:
+    client = genai.Client(api_key=GEMINI_API_KEY)
+else:
+    client = None
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
@@ -37,6 +45,12 @@ def chat():
         if not user_message:
             return jsonify({'error': 'Message is required'}), 400
         
+        if not client:
+             return jsonify({
+                'error': 'Chatbot is not configured properly. API Key missing.',
+                'status': 'error'
+            }), 503
+
         # Generate response using Gemini
         response = client.models.generate_content(
             model=GEMINI_MODEL,
