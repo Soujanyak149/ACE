@@ -68,6 +68,50 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
+        /* Practice Mode - Green */
+        .practice-card {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(39, 174, 96, 0.3));
+            border-color: rgba(46, 204, 113, 0.4);
+        }
+
+        .practice-card:hover {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(39, 174, 96, 0.4)) !important;
+            box-shadow: 0 20px 40px rgba(46, 204, 113, 0.2);
+        }
+
+        /* Timed Challenge - Yellow */
+        .timed-card {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 160, 0, 0.3));
+            border-color: rgba(255, 193, 7, 0.4);
+        }
+
+        .timed-card:hover {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.3), rgba(255, 160, 0, 0.4)) !important;
+            box-shadow: 0 20px 40px rgba(255, 193, 7, 0.2);
+        }
+
+        /* Survival Mode - Blue */
+        .survival-card {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(41, 128, 185, 0.3));
+            border-color: rgba(52, 152, 219, 0.4);
+        }
+
+        .survival-card:hover {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.3), rgba(41, 128, 185, 0.4)) !important;
+            box-shadow: 0 20px 40px rgba(52, 152, 219, 0.2);
+        }
+
+        /* Boss Level - Red */
+        .boss-card {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(192, 57, 43, 0.3));
+            border-color: rgba(231, 76, 60, 0.4);
+        }
+
+        .boss-card:hover {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.3), rgba(192, 57, 43, 0.4)) !important;
+            box-shadow: 0 20px 40px rgba(231, 76, 60, 0.2);
+        }
+
         .game-mode-icon {
             font-size: 3.5rem;
             margin-bottom: 20px;
@@ -1245,7 +1289,7 @@
     </div>
 
     <div class="game-modes">
-        <div class="game-mode-card" onclick="startMathGame('practice')">
+        <div class="game-mode-card practice-card" onclick="startMathGame('practice')">
             <span class="game-mode-icon">📚</span>
             <h3>Practice Mode</h3>
             <p>Learn at your own pace with unlimited questions and adaptive difficulty</p>
@@ -1257,7 +1301,7 @@
             <button class="start-game-btn">Start Practice</button>
         </div>
 
-        <div class="game-mode-card" onclick="startMathGame('timed')">
+        <div class="game-mode-card timed-card" onclick="startMathGame('timed')">
             <span class="game-mode-icon">⏱️</span>
             <h3>Timed Challenge</h3>
             <p>Race against the clock to solve as many problems as possible</p>
@@ -1269,7 +1313,7 @@
             <button class="start-game-btn">Start Challenge</button>
         </div>
 
-        <div class="game-mode-card" onclick="startMathGame('survival')">
+        <div class="game-mode-card survival-card" onclick="startMathGame('survival')">
             <span class="game-mode-icon">🔥</span>
             <h3>Survival Mode</h3>
             <p>Answer correctly to survive - one wrong answer ends the game!</p>
@@ -1281,7 +1325,7 @@
             <button class="start-game-btn">Start Survival</button>
         </div>
 
-        <div class="game-mode-card" onclick="startMathGame('boss')">
+        <div class="game-mode-card boss-card" onclick="startMathGame('boss')">
             <span class="game-mode-icon">👹</span>
             <h3>Boss Level</h3>
             <p>Face the ultimate math challenge with complex problems and time pressure</p>
