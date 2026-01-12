@@ -6,7 +6,14 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 
-load_dotenv()
+from pathlib import Path
+
+# Load environment variables from .env file in the same directory
+env_path = Path(__file__).parent / '.env'
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+else:
+    load_dotenv()
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
